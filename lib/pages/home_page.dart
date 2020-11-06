@@ -19,16 +19,20 @@ class WordHome extends StatefulWidget {
 
 class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
   int _cardIndex = 0;
-  ScrollController _scrollController;
   Color _currentColor = Color.fromRGBO(231, 129, 109, 1.0);
 
-  List<FloatingActionButton> _listOfButtonsForWordset = new List<FloatingActionButton>();
+  PageController _pageController = PageController();
+  var _currentPageIdx = 0.0;
+
+  List<FloatingActionButton> _listOfButtonsForWordset =
+      new List<FloatingActionButton>();
   List _listOfWordset = [];
   dynamic _currentWordsetIdx;
   bool _favIconPressed = false;
   int _favCardIdx;
   int _favWordIdx;
-  List _favWordList = [];
+  Color _favButtonColor;
+  List<bool> _clickedButton=[];
 
   AnimationController _animationController;
   ColorTween _colorTween;
@@ -37,7 +41,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _scrollController = new ScrollController();
+    _pageController = new PageController();
   }
 
   @override
@@ -69,38 +73,25 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 65.0, vertical: 32.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 65.0, vertical: 32.0),
               child: Container(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Icon(
-                        Icons.account_circle,
-                        size: 45.0,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Padding(
                       padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 12.0),
                       child: Text(
                         "Hi, there.",
                         style: TextStyle(
-                            fontSize: 26.0 * MediaQuery.textScaleFactorOf(context),
-                            color: Colors.white,
-                            fontWeight: FontWeight.w400),
+                            fontSize:
+                                26.0 * MediaQuery.textScaleFactorOf(context),
+                            color: Colors.white),
                       ),
                     ),
                     Text(
-                      "Let's learn some word today ..",
+                      "Let's learn some words today",
                       style: TextStyle(color: Colors.white),
-                    ),
-                    Text(
-                      "You have 3 tasks to do today.",
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
                     ),
                   ],
                 ),
@@ -113,7 +104,8 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
                   // Wordset choosing button
                   Container(
                       child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
                     child: FloatingActionButton.extended(
                         onPressed: _showDialogForWordSet,
                         label: _currentWordsetIdx != null
@@ -145,9 +137,11 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
               child: Text('loading data'),
             );
           } else {
-            Iterable<List<dynamic>> _snapshotItems = partition(snapshot.data, 30);
+            Iterable<List<dynamic>> _snapshotItems =
+                partition(snapshot.data, 30);
             _listOfButtonsForWordset.clear();
-
+            
+            List.generate(_snapshotItems.length, (i) => _clickedButton.add(false));
             for (var i = 0; i < _snapshotItems.length; i++) {
               _listOfButtonsForWordset
                   .add(buildFloatingActionButtonsForWordset(_snapshotItems, i));
@@ -159,10 +153,15 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
 
   // Button to show wordset
   FloatingActionButton buildFloatingActionButtonsForWordset(
-      Iterable<List> _snapshotItems, int i) {
+      Iterable<List> _snapshotItems, int i) {   
+      
     return new FloatingActionButton(
-        onPressed: () {
+        backgroundColor: _clickedButton[i] ? Colors.indigo : Colors.blue,
+        onPressed: () {                  
           _buildFabForWordset(_snapshotItems, i);
+          setState(() {
+            _clickedButton[i] = !_clickedButton[i];  
+          });
         },
         mini: true,
         child: Text((i + 1).toString()));
@@ -178,18 +177,25 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
 
   Widget _listviewBuilder(AsyncSnapshot snapshot) {
     if (_currentWordsetIdx != null) {
-      return listViewForWordlist(snapshot, true);
+      // return listViewForWordlist(snapshot, true);
+      return pageViewForWordlist(snapshot, true);
     } else {
-      return listViewForWordlist(snapshot, false);
+      // return listViewForWordlist(snapshot, false);
+      return pageViewForWordlist(snapshot, false);
     }
   }
 
-  ListView listViewForWordlist(AsyncSnapshot snapshot, bool _curentList) {
-    return ListView.builder(
+  PageView pageViewForWordlist(AsyncSnapshot snapshot, bool _curentList) {
+    if (MediaQuery.of(context).size.width < 400) {
+      _pageController = PageController(viewportFraction: 1.0);
+    } else {
+      _pageController = PageController(viewportFraction: 0.7);
+    }
+    return PageView.builder(
       key: _curentList ? ObjectKey(_listOfWordset[0][0]) : null,
       physics: NeverScrollableScrollPhysics(),
       itemCount: _curentList ? _listOfWordset[0].length : snapshot.data.length,
-      controller: _scrollController,
+      controller: _pageController,
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, index) {
         return gestureDetector(snapshot, index);
@@ -285,7 +291,9 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
             alignment: Alignment.center,
             child: LinearProgressIndicator(
               value: (_listSelected
-                  ? _listOfWordset[0].indexOf(_listOfWordset[0][index]) / 100 * 3.5
+                  ? _listOfWordset[0].indexOf(_listOfWordset[0][index]) /
+                      100 *
+                      3.5
                   : snapshot.data.indexOf(snapshot.data[index]) / 100 * 0.12),
             ),
           ),
@@ -304,9 +312,16 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
   }
 
   Card cardForWords(AsyncSnapshot snapshot, int index) {
+    List<bool> _favWordList = [];
+
+    if (_currentWordsetIdx != null) {
+      List.generate(_listOfWordset[0].length, (i) => _favWordList.add(false));
+    } else {
+      List.generate(snapshot.data.length, (i) => _favWordList.add(false));
+    }    
+
     return Card(
       child: Container(
-        width: MediaQuery.of(context).size.width / 100 * 60,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -316,15 +331,14 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  // Icon(
-                  //   cardsList[index].icon,
-                  //   color: appColors[index],
-                  // ),
                   IconButton(
                       icon: Icon(Icons.lightbulb),
-                      color: _favCardIdx == index ? Colors.pink : Colors.grey,
+                      color: _favWordList[index]? Colors.indigo:Colors.grey,
                       onPressed: () {
-                        _favCardIdx = index;
+                        setState(() {
+                          _favWordList[index] = !_favWordList[index];
+                          // _favWordList[index] ? _favButtonColor = Colors.pink:_favButtonColor = Colors.grey;
+                        });
                       }),
                 ],
               ),
@@ -349,10 +363,10 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
         child: cardForWords(snapshot, index),
       ),
       onHorizontalDragEnd: (details) {
-        _animationController =
-            AnimationController(vsync: this, duration: Duration(milliseconds: 500));
-        _curvedAnimation =
-            CurvedAnimation(parent: _animationController, curve: Curves.fastOutSlowIn);
+        _animationController = AnimationController(
+            vsync: this, duration: Duration(milliseconds: 500));
+        _curvedAnimation = CurvedAnimation(
+            parent: _animationController, curve: Curves.fastOutSlowIn);
         _animationController.addListener(() {
           setState(() {
             _currentColor = _colorTween.evaluate(_curvedAnimation);
@@ -371,8 +385,9 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
           }
         }
         setState(() {
-          _scrollController.animateTo((_cardIndex) * 256.0,
-              duration: Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
+          _pageController.animateTo((_cardIndex) * 256.0,
+              duration: Duration(milliseconds: 500),
+              curve: Curves.fastOutSlowIn);
         });
         _colorTween.animate(_curvedAnimation);
         _animationController.forward();
@@ -404,15 +419,16 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
               horizontal: MediaQuery.of(context).size.width * 0.05,
               vertical: MediaQuery.of(context).size.width * 0.04),
           contentPadding: EdgeInsets.all(0),
-          content: Wrap(
-              alignment: WrapAlignment.spaceEvenly,
-              children: [renderListOfButtonsForWordset(_listOfButtonsForWordset)]),
+          content: Wrap(alignment: WrapAlignment.spaceEvenly, children: [
+            renderListOfButtonsForWordset(_listOfButtonsForWordset)
+          ]),
           actions: <Widget>[
             new FlatButton(
               child: new Text("Clear"),
               onPressed: () {
                 setState(() {
                   _listOfWordset.clear();
+                  _clickedButton.clear();
                   _currentWordsetIdx = null;
                 });
               },

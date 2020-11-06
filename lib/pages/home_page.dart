@@ -60,12 +60,16 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
         ],
         elevation: 0.0,
       ),
-      body: new Center(
+      body: SafeArea(
+        top: true,
+        bottom: true,
+        minimum: const EdgeInsets.only(top: 8.0, bottom: 8.0),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 64.0, vertical: 32.0),
+              padding: const EdgeInsets.symmetric(horizontal: 65.0, vertical: 32.0),
               child: Container(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,13 +87,13 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
                       child: Text(
                         "Hi, there.",
                         style: TextStyle(
-                            fontSize: 30.0,
+                            fontSize: 26.0 * MediaQuery.textScaleFactorOf(context),
                             color: Colors.white,
                             fontWeight: FontWeight.w400),
                       ),
                     ),
                     Text(
-                      "Looks like feel good.",
+                      "Let's learn some word today ..",
                       style: TextStyle(color: Colors.white),
                     ),
                     Text(
@@ -102,32 +106,27 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
                 ),
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 64.0, vertical: 16.0),
-                  child: Text(
-                    "TODAY : JUL 21, 2018",
-                    style: TextStyle(color: Colors.white),
+            Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  // Wordset choosing button
+                  Container(
+                      child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    child: FloatingActionButton.extended(
+                        onPressed: _showDialogForWordSet,
+                        label: _currentWordsetIdx != null
+                            ? Text('Wordset #${_currentWordsetIdx + 1}')
+                            : Text('Wordset')),
+                  )),
+                  // Start of a card with list
+                  Container(
+                    height: _height * 44,
+                    child: buildFutureBuilder(),
                   ),
-                ),
-                // Wordset choosing
-                Container(
-                    child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-                  child: FloatingActionButton.extended(
-                      onPressed: _showDialogForWordSet,
-                      label: _currentWordsetIdx != null
-                          ? Text('Wordset #${_currentWordsetIdx + 1}')
-                          : Text('Wordset')),
-                )),
-                // Start of a card with list
-                Container(
-                  height: _height * 44,
-                  child: buildFutureBuilder(),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
@@ -135,7 +134,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
     );
   }
 
-  // TODO: create a widget from this
+  // Future builder to load the data and create the wordset button list
   FutureBuilder<List<Map>> buildFutureBuilder() {
     return FutureBuilder(
         future: loadAsset(),
@@ -199,29 +198,29 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
   }
 
   // Antonyms and synonyms chips are processed
-  Widget listOfWordsToMakeChips(List<String> _item, Color _txtColor, Color _bgColor) {
+  Widget listOfWordsToMakeChips(List<String> _item, Color _bgColor) {
     List<Widget> list = List<Widget>();
     for (var i = 0; i < _item.length; i++) {
       if (_item[i] != 'N/A') {
-        list.add(Container(
-          child: Chip(
-              label: Text(_item[i],
-                  style: TextStyle(
-                      fontSize: 12.0 * MediaQuery.textScaleFactorOf(context),
-                      color: _txtColor)),
-              backgroundColor: _bgColor),
-        ));
+        list.add(Chip(
+            label: Text(_item[i],
+                style: TextStyle(
+                  fontSize: 12.0 * MediaQuery.textScaleFactorOf(context),
+                )),
+            backgroundColor: _bgColor));
       }
     }
-    return Wrap(runSpacing: -14, spacing: 2, children: list);
+    return Wrap(runSpacing: -16, spacing: 2, children: list);
   }
 
+  // Render words inside the card
   Column wordsToRender(AsyncSnapshot snapshot, int index, bool _listSelected) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Container(
             child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -232,20 +231,18 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
                         _listSelected
                             ? _listOfWordset[0][index]['ANTONYMS'].split('| ')
                             : snapshot.data[index]['ANTONYMS'].split('| '),
-                        Colors.black,
                         Colors.pink[100]),
                     listOfWordsToMakeChips(
                         _listSelected
                             ? _listOfWordset[0][index]['SYNONYMS'].split('| ')
                             : snapshot.data[index]['SYNONYMS'].split('| '),
-                        Colors.black,
                         Colors.teal[100]),
                   ],
                 )),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Container(
             height: MediaQuery.of(context).size.height / 100 * 7,
             alignment: Alignment.bottomLeft,
@@ -257,38 +254,48 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
                     : snapshot.data[index]['MEANINGS'],
                 style: TextStyle(
                     color: Colors.black,
-                    fontSize: 15.0 * MediaQuery.textScaleFactorOf(context)),
+                    fontSize: 14.0 * MediaQuery.textScaleFactorOf(context)),
               ),
             ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-          child: Text(
-            _listSelected
-                ? _listOfWordset[0][index]['WORDS']
-                : snapshot.data[index]['WORDS'],
-            style: TextStyle(
-                color: Colors.grey[700],
-                fontFamily: 'Roboto Slab',
-                fontSize: 28.0 * MediaQuery.textScaleFactorOf(context)),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+          child: Container(
+            height: MediaQuery.of(context).size.height / 100 * 6,
+            alignment: Alignment.bottomLeft,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Text(
+                _listSelected
+                    ? _listOfWordset[0][index]['WORDS']
+                    : snapshot.data[index]['WORDS'],
+                style: TextStyle(
+                    color: Colors.grey[700],
+                    fontFamily: 'Roboto Slab',
+                    fontSize: 24.0 * MediaQuery.textScaleFactorOf(context)),
+              ),
+            ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: LinearProgressIndicator(
-            value: (_listSelected
-                ? _listOfWordset[0].indexOf(_listOfWordset[0][index]) / 100 * 3.5
-                : snapshot.data.indexOf(snapshot.data[index]) / 100 * 0.12),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+          child: Container(
+            height: MediaQuery.of(context).size.height / 100 * 0.5,
+            alignment: Alignment.center,
+            child: LinearProgressIndicator(
+              value: (_listSelected
+                  ? _listOfWordset[0].indexOf(_listOfWordset[0][index]) / 100 * 3.5
+                  : snapshot.data.indexOf(snapshot.data[index]) / 100 * 0.12),
+            ),
           ),
         ),
       ],
     );
   }
 
-  // Widget to show which wordset to appear on acreem
+  // Widget to appear items on the card
   Widget wordsetToRenderOnCards(AsyncSnapshot snapshot, int index) {
-    // double _fontSize = MediaQuery.textScaleFactorOf(context);
     if (_currentWordsetIdx != null) {
       return wordsToRender(snapshot, index, true);
     } else {
@@ -384,20 +391,23 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
   }
 
   void _showDialogForWordSet() {
-    double size = MediaQuery.of(context).size.width;
+    // double size = MediaQuery.of(context).size.width;
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        // return object of type Dialog
         return AlertDialog(
-          title: new Text("choose a set"),
-          titlePadding: EdgeInsets.fromLTRB(size / 18, size / 18, size / 18, size / 27),
-          insetPadding: EdgeInsets.symmetric(horizontal: size / 9),
-          contentPadding: EdgeInsets.symmetric(horizontal: size / 27),
-          content:
-              Wrap(children: [renderListOfButtonsForWordset(_listOfButtonsForWordset)]),
+          title: Text(
+            "choose a set",
+            style: TextStyle(color: Colors.grey[700]),
+          ),
+          titlePadding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.of(context).size.width * 0.05,
+              vertical: MediaQuery.of(context).size.width * 0.04),
+          contentPadding: EdgeInsets.all(0),
+          content: Wrap(
+              alignment: WrapAlignment.spaceEvenly,
+              children: [renderListOfButtonsForWordset(_listOfButtonsForWordset)]),
           actions: <Widget>[
-            // usually buttons at the bottom of the dialog
             new FlatButton(
               child: new Text("Clear"),
               onPressed: () {

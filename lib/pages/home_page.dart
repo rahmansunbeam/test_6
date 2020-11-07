@@ -22,17 +22,15 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
   Color _currentColor = Color.fromRGBO(231, 129, 109, 1.0);
 
   PageController _pageController = PageController();
-  var _currentPageIdx = 0.0;
 
   List<FloatingActionButton> _listOfButtonsForWordset =
       new List<FloatingActionButton>();
   List _listOfWordset = [];
+  dynamic _currentWordIdx;
   dynamic _currentWordsetIdx;
-  bool _favIconPressed = false;
-  int _favCardIdx;
-  int _favWordIdx;
-  Color _favButtonColor;
-  List<bool> _clickedButton=[];
+
+  List<bool> _favouriteItemList = [];
+  List<bool> _favouriteWordList = [];
 
   AnimationController _animationController;
   ColorTween _colorTween;
@@ -140,8 +138,25 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
             Iterable<List<dynamic>> _snapshotItems =
                 partition(snapshot.data, 30);
             _listOfButtonsForWordset.clear();
-            
-            List.generate(_snapshotItems.length, (i) => _clickedButton.add(false));
+
+            // Populating favourite list for cards
+            // if (_currentWordsetIdx != null) {
+            //   if (_favouriteItemList.length < _snapshotItems.length) {
+            //     _favouriteItemList.clear();
+            //     List.generate(_snapshotItems.length,
+            //         (i) => _favouriteItemList.add(false));
+            //   }
+            // } 
+            // else {
+              if (_favouriteItemList.length < snapshot.data.length) {
+                _favouriteItemList.clear();
+                List.generate(
+                    snapshot.data.length, (i) => _favouriteItemList.add(false));
+                List.generate(
+                    snapshot.data.length, (i) => _favouriteWordList.add(false));
+              }
+            // }
+
             for (var i = 0; i < _snapshotItems.length; i++) {
               _listOfButtonsForWordset
                   .add(buildFloatingActionButtonsForWordset(_snapshotItems, i));
@@ -153,15 +168,10 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
 
   // Button to show wordset
   FloatingActionButton buildFloatingActionButtonsForWordset(
-      Iterable<List> _snapshotItems, int i) {   
-      
+      Iterable<List> _snapshotItems, int i) {
     return new FloatingActionButton(
-        backgroundColor: _clickedButton[i] ? Colors.indigo : Colors.blue,
-        onPressed: () {                  
+        onPressed: () {
           _buildFabForWordset(_snapshotItems, i);
-          setState(() {
-            _clickedButton[i] = !_clickedButton[i];  
-          });
         },
         mini: true,
         child: Text((i + 1).toString()));
@@ -177,10 +187,8 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
 
   Widget _listviewBuilder(AsyncSnapshot snapshot) {
     if (_currentWordsetIdx != null) {
-      // return listViewForWordlist(snapshot, true);
       return pageViewForWordlist(snapshot, true);
     } else {
-      // return listViewForWordlist(snapshot, false);
       return pageViewForWordlist(snapshot, false);
     }
   }
@@ -312,14 +320,6 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
   }
 
   Card cardForWords(AsyncSnapshot snapshot, int index) {
-    List<bool> _favWordList = [];
-
-    if (_currentWordsetIdx != null) {
-      List.generate(_listOfWordset[0].length, (i) => _favWordList.add(false));
-    } else {
-      List.generate(snapshot.data.length, (i) => _favWordList.add(false));
-    }    
-
     return Card(
       child: Container(
         child: Column(
@@ -331,15 +331,17 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  IconButton(
-                      icon: Icon(Icons.lightbulb),
-                      color: _favWordList[index]? Colors.indigo:Colors.grey,
-                      onPressed: () {
-                        setState(() {
-                          _favWordList[index] = !_favWordList[index];
-                          // _favWordList[index] ? _favButtonColor = Colors.pink:_favButtonColor = Colors.grey;
-                        });
-                      }),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      _favouriteItemList[index]
+                          ? Icons.lightbulb
+                          : Icons.lightbulb_outline,
+                      color: _favouriteItemList[index]
+                          ? Colors.orangeAccent[700]
+                          : Colors.grey[700],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -392,6 +394,25 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
         _colorTween.animate(_curvedAnimation);
         _animationController.forward();
       },
+      onDoubleTap: () {
+        setState(() {
+          _favouriteItemList[index] = !_favouriteItemList[index];
+        });
+
+        if (_currentWordsetIdx != null) {
+          _currentWordIdx = _listOfWordset[0][index]['#'];
+        } else {
+          _currentWordIdx = snapshot.data[index]['#'];
+        }
+
+        if (_favouriteItemList[index]) {
+          _favouriteWordList[_currentWordIdx - 1] = true;
+        } else {
+          _favouriteWordList[_currentWordIdx - 1] = false;
+        }
+
+        print(_favouriteWordList.where((item) => item == true).length);
+      },
     );
   }
 
@@ -406,7 +427,6 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
   }
 
   void _showDialogForWordSet() {
-    // double size = MediaQuery.of(context).size.width;
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -428,7 +448,6 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
               onPressed: () {
                 setState(() {
                   _listOfWordset.clear();
-                  _clickedButton.clear();
                   _currentWordsetIdx = null;
                 });
               },

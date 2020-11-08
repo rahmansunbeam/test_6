@@ -309,17 +309,12 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
   }
 
   Icon _favouriteIcon(AsyncSnapshot snapshot, int index) {
-    if (_currentWordsetIdx != null) {
-      print(_currentWordIdx);
-      print(_currentWordsetIdx);
-      print(_favouriteItemList.length);
-      // print(_listOfWordset[0][index]);
-      return Icon(_favouriteItemList[_listOfWordset[0].indexOf(_listOfWordset[0][index])]
+    if (_currentWordsetIdx != null) {      
+      return Icon(_favouriteItemList[index]
           ? Icons.lightbulb
           : Icons.lightbulb_outline);
     } else {
-      // print(snapshot.data.indexOf(snapshot.data[index]));
-      return Icon(_favouriteItemList[snapshot.data.indexOf(snapshot.data[index])]
+      return Icon(_favouriteItemList[index]
           ? Icons.lightbulb
           : Icons.lightbulb_outline);
     }
@@ -401,7 +396,15 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
       },
       onLongPress: () {
         setState(() {
-          _favouriteItemList[index] = !_favouriteItemList[index];
+          if (_currentWordsetIdx != null) {
+            print('What to do??');
+            
+          } else {
+            _favouriteItemList[index] =! _favouriteItemList[index]; 
+          }
+          // _currentWordsetIdx != null
+          // ?_favouriteItemList[_currentWordIdx] = !_favouriteItemList[_currentWordIdx]
+          // :_favouriteItemList[index] =! _favouriteItemList[index];                   
         });
 
         if (_currentWordsetIdx != null) {
@@ -410,12 +413,14 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
           _currentWordIdx = snapshot.data[index]['#'];
         }
 
-        if (_favouriteItemList[index]) {
-          _favouriteWordList[_currentWordIdx - 1] = true;
-        } else {
-          _favouriteWordList[_currentWordIdx - 1] = false;
-        }
-        print(_favouriteWordList.where((item) => item == true).length);
+        // if (_favouriteItemList[index]) {
+        //   _favouriteWordList[_currentWordIdx - 1] = true;
+        // } else {
+        //   _favouriteWordList[_currentWordIdx - 1] = false;
+        // }
+        // print(_favouriteWordList.where((item) => item == true).length);
+        print(_favouriteItemList.where((item) => item == true).length);
+        // print(_listOfWordset[0].indexOf(_listOfWordset[0][index]));
       },
     );
   }

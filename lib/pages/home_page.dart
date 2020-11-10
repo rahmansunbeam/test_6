@@ -18,20 +18,19 @@ class WordHome extends StatefulWidget {
 }
 
 class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
-  Future _loadAsset;
+  Future<List<Map>> _loadAsset;
   int _cardIndex = 0;
   Color _currentColor = Color.fromRGBO(231, 129, 109, 1.0);
 
   PageController _pageController = PageController();
 
-  List<FloatingActionButton> _listOfButtonsForWordset =
-      new List<FloatingActionButton>();
+  List<FloatingActionButton> _listOfButtonsForWordset = new List<FloatingActionButton>();
   List _listOfWordset = [];
   dynamic _currentWordIdx;
   dynamic _currentWordsetIdx;
 
   List<bool> _favouriteItemListFull = [];
-  Iterable<List> _favouriteItemListSet = [];
+  Iterable<List<bool>> _favouriteItemListSet = [];
   List<bool> _favouriteWordList = [];
 
   AnimationController _animationController;
@@ -40,8 +39,8 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    _loadAsset = loadAsset();
     super.initState();
+    _loadAsset = loadAsset();
     _pageController = new PageController();
   }
 
@@ -84,8 +83,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
                       child: Text(
                         "Hi, there.",
                         style: TextStyle(
-                            fontSize:
-                                26.0 * MediaQuery.textScaleFactorOf(context),
+                            fontSize: 26.0 * MediaQuery.textScaleFactorOf(context),
                             color: Colors.white),
                       ),
                     ),
@@ -106,8 +104,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
                   // Wordset choosing button
                   Container(
                       child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     child: FloatingActionButton.extended(
                         onPressed: _showDialogForWordSet,
                         label: _currentWordsetIdx != null
@@ -116,7 +113,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
                   )),
                   // Start of a card with list
                   Container(
-                    height: _height * 40,
+                    height: _height * 45,
                     child: buildFutureBuilder(),
                   ),
                 ],
@@ -139,50 +136,54 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
               child: Text('loading data'),
             );
           } else {
-            // Populating favourite list for cards
-            List.generate(snapshot.data.length, (i) => _favouriteItemListFull.add(false));
-            _favouriteItemListSet = partition(_favouriteItemListFull, 30);
-
-            // Populating buttons for wordset
-            Iterable<List<dynamic>> _snapshotItems = partition(snapshot.data, 30);
-            _listOfButtonsForWordset.clear();
-            for (var i = 0; i < _snapshotItems.length; i++) {
-              _listOfButtonsForWordset
-                  .add(buildFloatingActionButtonsForWordset(_snapshotItems, i));
-            }
-            return _listviewBuilder(snapshot);
+            _populateFabOfWordset(snapshot.data);
+            return _pageviewBuilder(snapshot.data);
           }
         });
   }
 
-  // Button to show wordset
-  FloatingActionButton buildFloatingActionButtonsForWordset(
-      Iterable<List> _snapshotItems, int i) {
+  // Populate button list
+  void _populateFabOfWordset(List<Map> data) {
+    // Populating favourite list for cards
+    if (_favouriteItemListFull.length < data.length) {
+      List.generate(data.length, (i) => _favouriteItemListFull.add(false));
+    }
+
+    _favouriteItemListSet = partition(_favouriteItemListFull, 30);
+
+    // Populating buttons for wordset
+    Iterable<List> _dataItems = partition(data, 30);
+
+    if (_listOfButtonsForWordset.length < _dataItems.length) {
+      for (var i = 0; i < _dataItems.length; i++) {
+        _listOfButtonsForWordset.add(buildFabForWordset(_dataItems, i));
+      }
+    }
+  }
+
+  // Create each button to show wordset
+  FloatingActionButton buildFabForWordset(Iterable<List> _dataItems, int i) {
     return new FloatingActionButton(
         onPressed: () {
-          _buildFabForWordset(_snapshotItems, i);
+          setState(() {
+            _listOfWordset.clear();
+            _listOfWordset.add(_dataItems.elementAt(i));
+            _currentWordsetIdx = i;
+          });
         },
         mini: true,
         child: Text((i + 1).toString()));
   }
 
-  void _buildFabForWordset(Iterable<List> _snapshotItems, int i) {
-    return setState(() {
-      _listOfWordset.clear();
-      _listOfWordset.add(_snapshotItems.elementAt(i));
-      _currentWordsetIdx = i;
-    });
-  }
-
-  Widget _listviewBuilder(AsyncSnapshot snapshot) {
+  Widget _pageviewBuilder(List<Map> data) {
     if (_currentWordsetIdx != null) {
-      return pageViewForWordlist(snapshot, true);
+      return pageViewForWordlist(data, true);
     } else {
-      return pageViewForWordlist(snapshot, false);
+      return pageViewForWordlist(data, false);
     }
   }
 
-  PageView pageViewForWordlist(AsyncSnapshot snapshot, bool _curentList) {
+  PageView pageViewForWordlist(List<Map> data, bool _curentList) {
     if (MediaQuery.of(context).size.width < 400) {
       _pageController = PageController(viewportFraction: 1.0);
     } else {
@@ -191,11 +192,11 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
     return PageView.builder(
       key: _curentList ? ObjectKey(_listOfWordset[0][0]) : null,
       physics: NeverScrollableScrollPhysics(),
-      itemCount: _curentList ? _listOfWordset[0].length : snapshot.data.length,
+      itemCount: _curentList ? _listOfWordset[0].length : data.length,
       controller: _pageController,
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, index) {
-        return gestureDetector(snapshot, index);
+        return gestureDetector(data, index);
       },
     );
   }
@@ -222,7 +223,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
   }
 
   // Render words inside the card
-  Column wordsToRender(AsyncSnapshot snapshot, int index, bool _listSelected) {
+  Column wordsToRender(List<Map> data, int index, bool _listSelected) {
     double _height = MediaQuery.of(context).size.height;
     double _width = MediaQuery.of(context).size.width;
     return Column(
@@ -233,10 +234,10 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Container(
             height: (_width < 400)
-                ? _height / 100 * 10
+                ? _height / 100 * 12
                 : (_width >= 400 && _width < 600)
-                    ? _height / 100 * 11
-                    : _height / 100 * 13,
+                    ? _height / 100 * 14
+                    : _height / 100 * 15,
             child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Column(
@@ -246,12 +247,12 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
                     listOfWordsToMakeChips(
                         _listSelected
                             ? _listOfWordset[0][index]['ANTONYMS'].split('| ')
-                            : snapshot.data[index]['ANTONYMS'].split('| '),
+                            : data[index]['ANTONYMS'].split('| '),
                         Colors.pink[100]),
                     listOfWordsToMakeChips(
                         _listSelected
                             ? _listOfWordset[0][index]['SYNONYMS'].split('| ')
-                            : snapshot.data[index]['SYNONYMS'].split('| '),
+                            : data[index]['SYNONYMS'].split('| '),
                         Colors.teal[100]),
                   ],
                 )),
@@ -261,7 +262,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Container(
             height: (_width < 400)
-                ? _height / 100 * 6
+                ? _height / 100 * 8
                 : (_width >= 400 && _width < 600)
                     ? _height / 100 * 7
                     : _height / 100 * 9,
@@ -271,14 +272,14 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
               child: Text(
                 _listSelected
                     ? _listOfWordset[0][index]['MEANINGS']
-                    : snapshot.data[index]['MEANINGS'],
+                    : data[index]['MEANINGS'],
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: (_width < 400)
                         ? 11.0 * MediaQuery.textScaleFactorOf(context)
                         : (_width >= 400 && _width < 600)
                             ? 15.0 * MediaQuery.textScaleFactorOf(context)
-                            : 20.0 * MediaQuery.textScaleFactorOf(context)),
+                            : 18.0 * MediaQuery.textScaleFactorOf(context)),
               ),
             ),
           ),
@@ -295,9 +296,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Text(
-                _listSelected
-                    ? _listOfWordset[0][index]['WORDS']
-                    : snapshot.data[index]['WORDS'],
+                _listSelected ? _listOfWordset[0][index]['WORDS'] : data[index]['WORDS'],
                 style: TextStyle(
                     color: Colors.grey[700],
                     fontFamily: 'Roboto Slab',
@@ -317,10 +316,8 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
             alignment: Alignment.center,
             child: LinearProgressIndicator(
               value: (_listSelected
-                  ? _listOfWordset[0].indexOf(_listOfWordset[0][index]) /
-                      100 *
-                      3.5
-                  : snapshot.data.indexOf(snapshot.data[index]) / 100 * 0.12),
+                  ? _listOfWordset[0].indexOf(_listOfWordset[0][index]) / 100 * 3.5
+                  : data.indexOf(data[index]) / 100 * 0.12),
             ),
           ),
         ),
@@ -329,27 +326,26 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
   }
 
   // Widget to appear items on the card
-  Widget wordsetToRenderOnCards(AsyncSnapshot snapshot, int index) {
+  Widget wordsetToRenderOnCards(List<Map> data, int index) {
     if (_currentWordsetIdx != null) {
-      return wordsToRender(snapshot, index, true);
+      return wordsToRender(data, index, true);
     } else {
-      return wordsToRender(snapshot, index, false);
+      return wordsToRender(data, index, false);
     }
   }
 
-  Icon _favouriteIcon(AsyncSnapshot snapshot, int index) {
+  Icon _favouriteIcon(List<Map> data, int index) {
     if (_currentWordsetIdx != null) {
       return Icon(_favouriteItemListSet.elementAt(_currentWordsetIdx)[index]
           ? Icons.lightbulb
           : Icons.lightbulb_outline);
     } else {
-      return Icon(_favouriteItemListFull[index]
-          ? Icons.lightbulb
-          : Icons.lightbulb_outline);
+      return Icon(
+          _favouriteItemListFull[index] ? Icons.lightbulb : Icons.lightbulb_outline);
     }
   }
 
-  Card cardForWords(AsyncSnapshot snapshot, int index) {
+  Card cardForWords(List<Map> data, int index) {
     return Card(
       child: Container(
         child: Column(
@@ -363,7 +359,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: _favouriteIcon(snapshot, index),
+                    child: _favouriteIcon(data, index),
 
                     // _favouriteItemList[index]
                     //     ? Icons.lightbulb
@@ -377,7 +373,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: wordsetToRenderOnCards(snapshot, index),
+              child: wordsetToRenderOnCards(data, index),
             ),
           ],
         ),
@@ -386,29 +382,28 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
     );
   }
 
-  Widget gestureDetector(AsyncSnapshot snapshot, int index) {
+  Widget gestureDetector(List<Map> data, int index) {
     return GestureDetector(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: cardForWords(snapshot, index),
+          child: cardForWords(data, index),
         ),
         onHorizontalDragEnd: (details) {
-          return _gestureChangeBgColorMode(snapshot, index, details);
+          return _gestureChangeBgColorMode(data, index, details);
         },
         onLongPress: () {
-          return _gestureAddFavourite(snapshot, index);
+          return _gestureAddFavourite(data, index);
         });
   }
 
-  dynamic _gestureChangeBgColorMode(
-      AsyncSnapshot snapshot, int index, DragEndDetails details) {
+  dynamic _gestureChangeBgColorMode(List<Map> data, int index, DragEndDetails details) {
     Color _randomRolor = Color(Random().nextInt(0xffffffff)).withAlpha(0xff);
 
     _animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
 
-    _curvedAnimation = CurvedAnimation(
-        parent: _animationController, curve: Curves.fastOutSlowIn);
+    _curvedAnimation =
+        CurvedAnimation(parent: _animationController, curve: Curves.fastOutSlowIn);
 
     _animationController.addListener(() {
       setState(() {
@@ -422,7 +417,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
         _colorTween = ColorTween(begin: _currentColor, end: _randomRolor);
       }
     } else {
-      if (_cardIndex < snapshot.data.length) {
+      if (_cardIndex < data.length) {
         _cardIndex++;
         _colorTween = ColorTween(begin: _currentColor, end: _randomRolor);
       }
@@ -435,11 +430,11 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
     _animationController.forward();
   }
 
-  dynamic _gestureAddFavourite(AsyncSnapshot snapshot, int index) {
+  dynamic _gestureAddFavourite(List<Map> data, int index) {
     setState(() {
       if (_currentWordsetIdx != null) {
-        // print('What to do??');
-        _favouriteItemListSet.elementAt(_currentWordsetIdx)[index] =!_favouriteItemListSet.elementAt(_currentWordsetIdx)[index];
+        _favouriteItemListSet.elementAt(_currentWordsetIdx)[index] =
+            !_favouriteItemListSet.elementAt(_currentWordsetIdx)[index];
       } else {
         _favouriteItemListFull[index] = !_favouriteItemListFull[index];
       }
@@ -448,7 +443,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
     if (_currentWordsetIdx != null) {
       _currentWordIdx = _listOfWordset[0][index]['#'];
     } else {
-      _currentWordIdx = snapshot.data[index]['#'];
+      _currentWordIdx = data[index]['#'];
     }
 
     // if (_favouriteItemList[index]) {
@@ -457,11 +452,16 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
     //   _favouriteWordList[_currentWordIdx - 1] = false;
     // }
     // print(_favouriteWordList.where((item) => item == true).length);
-    print(_favouriteItemListFull.where((item) => item == true).length);
+    // print(_favouriteItemListFull.where((item) => item == true).length);
+    // print(_favouriteItemListSet
+    //     .elementAt(_currentWordsetIdx)
+    //     .where((item) => item == true)
+    //     .length);
     // print(_listOfWordset[0].indexOf(_listOfWordset[0][index]));
-    print(_currentWordsetIdx);
+    // print(_currentWordsetIdx);
     print(_favouriteItemListFull.length);
     print(_favouriteItemListSet.length);
+    // print(_favouriteItemListSet.elementAt(_currentWordsetIdx));
     // print(_favouriteItemListSet.elementAt(_currentWordsetIdx)[index]);
   }
 
@@ -488,9 +488,9 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
               horizontal: MediaQuery.of(context).size.width * 0.05,
               vertical: MediaQuery.of(context).size.width * 0.04),
           contentPadding: EdgeInsets.all(0),
-          content: Wrap(alignment: WrapAlignment.spaceEvenly, children: [
-            renderListOfButtonsForWordset(_listOfButtonsForWordset)
-          ]),
+          content: Wrap(
+              alignment: WrapAlignment.spaceEvenly,
+              children: [renderListOfButtonsForWordset(_listOfButtonsForWordset)]),
           actions: <Widget>[
             new FlatButton(
               child: new Text("Clear"),

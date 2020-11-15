@@ -20,11 +20,13 @@ class WordHome extends StatefulWidget {
 class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
   Future<List<Map>> _loadAsset;
   int _cardIndex = 0;
-  Color _currentColor = Color.fromRGBO(231, 129, 109, 1.0);
+  Color _backgroundColor = Colors.teal[700];
+  bool _darkThemeChosen = false;
 
   PageController _pageController = PageController();
 
-  List<FloatingActionButton> _listOfButtonsForWordset = new List<FloatingActionButton>();
+  List<FloatingActionButton> _listOfButtonsForWordset =
+      new List<FloatingActionButton>();
   List _listOfWordset = [];
   dynamic _currentWordIdx;
   dynamic _currentWordsetIdx;
@@ -48,101 +50,117 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     double _height = MediaQuery.of(context).size.height / 100;
     return new Scaffold(
-      backgroundColor: _currentColor,
+      backgroundColor: _backgroundColor,
       appBar: new AppBar(
-        // title: new Text(
-        //   "TODO",
-        //   style: TextStyle(fontSize: 16.0),
-        // ),
-        backgroundColor: _currentColor,
+        backgroundColor: _darkThemeChosen ? Colors.black : _backgroundColor,
         centerTitle: true,
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: Icon(Icons.search),
+            child: IconButton(
+              onPressed: _darkModeToggle,
+              icon: Icon(Icons.sync),
+              splashRadius: 20,
+            ),
           ),
         ],
         elevation: 0.0,
       ),
-      body: SafeArea(
-        top: true,
-        bottom: true,
-        minimum: const EdgeInsets.only(bottom: 3),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 65.0),
-              child: Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 12.0),
-                      child: Text(
-                        "Hi, there.",
+      body: ColoredBox(
+        color: _darkThemeChosen ? Colors.black : _backgroundColor,
+        child: SafeArea(
+          top: true,
+          bottom: true,
+          minimum: const EdgeInsets.only(bottom: 3),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 65.0),
+                child: Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding:
+                            const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 12.0),
+                        child: Text(
+                          "Hi, there.",
+                          style: TextStyle(
+                              fontSize:
+                                  26.0 * MediaQuery.textScaleFactorOf(context),
+                              color: Colors.white),
+                        ),
+                      ),
+                      Text(
+                        "Let's learn some words today",
                         style: TextStyle(
-                            fontSize: 26.0 * MediaQuery.textScaleFactorOf(context),
+                            fontSize:
+                                14.0 * MediaQuery.textScaleFactorOf(context),
                             color: Colors.white),
                       ),
-                    ),
-                    Text(
-                      "Let's learn some words today",
+                    ],
+                  ),
+                ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 65.0),
+                    child: Text(
+                      _favouriteWordList.length != null &&
+                              _favouriteWordList.length != 0
+                          ? _favouriteWordList.length == 1
+                              ? '${_favouriteWordList.length} word learned'
+                              : '${_favouriteWordList.length} words learned'
+                          : '',
                       style: TextStyle(
-                          fontSize: 14.0 * MediaQuery.textScaleFactorOf(context),
+                          fontSize:
+                              16.0 * MediaQuery.textScaleFactorOf(context),
                           color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                height: _height * 62,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    // Wordset choosing button
+                    Container(
+                        child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                      child: FloatingActionButton.extended(
+                          onPressed: _showDialogForWordSet,
+                          label: _currentWordsetIdx != null
+                              ? Text('Wordset #${_currentWordsetIdx + 1}')
+                              : Text('Wordset')),
+                    )),
+                    // Start of a card with list
+                    Container(
+                      height: _height * 45,
+                      child: buildFutureBuilder(),
                     ),
                   ],
                 ),
               ),
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 65.0),
-                  child: Text(
-                    _favouriteWordList.length != null && _favouriteWordList.length != 0
-                        ? _favouriteWordList.length == 1
-                            ? '${_favouriteWordList.length} word learned'
-                            : '${_favouriteWordList.length} words learned'
-                        : '',
-                    style: TextStyle(
-                        fontSize: 16.0 * MediaQuery.textScaleFactorOf(context),
-                        color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-            Container(
-              height: _height * 62,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  // Wordset choosing button
-                  Container(
-                      child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    child: FloatingActionButton.extended(
-                        onPressed: _showDialogForWordSet,
-                        label: _currentWordsetIdx != null
-                            ? Text('Wordset #${_currentWordsetIdx + 1}')
-                            : Text('Wordset')),
-                  )),
-                  // Start of a card with list
-                  Container(
-                    height: _height * 45,
-                    child: buildFutureBuilder(),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  // Dark mode toggle button method
+  _darkModeToggle() {
+    setState(() {
+      _darkThemeChosen = !_darkThemeChosen;
+    });
   }
 
   // Future builder to load the data and create the wordset button list
@@ -203,7 +221,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
   }
 
   PageView pageViewForWordlist(List<Map> data, bool _curentList) {
-    if (MediaQuery.of(context).size.width < 400) {
+    if (MediaQuery.of(context).size.width < 350) {
       _pageController = PageController(viewportFraction: 1.0);
     } else {
       _pageController = PageController(viewportFraction: 0.7);
@@ -229,9 +247,9 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
         list.add(Chip(
             label: Text(_item[i],
                 style: TextStyle(
-                  fontSize: (_width < 400)
-                      ? 11.0 * MediaQuery.textScaleFactorOf(context)
-                      : (_width >= 400 && _width < 600)
+                  fontSize: (_width < 350)
+                      ? 12.0 * MediaQuery.textScaleFactorOf(context)
+                      : (_width >= 350 && _width < 600)
                           ? 13.0 * MediaQuery.textScaleFactorOf(context)
                           : 14.0 * MediaQuery.textScaleFactorOf(context),
                 )),
@@ -252,9 +270,9 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Container(
-            height: (_width < 400)
+            height: (_width < 350)
                 ? _height / 100 * 12
-                : (_width >= 400 && _width < 600)
+                : (_width >= 350 && _width < 600)
                     ? _height / 100 * 14
                     : _height / 100 * 15,
             child: SingleChildScrollView(
@@ -280,9 +298,9 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Container(
-            height: (_width < 400)
+            height: (_width < 350)
                 ? _height / 100 * 8
-                : (_width >= 400 && _width < 600)
+                : (_width >= 350 && _width < 600)
                     ? _height / 100 * 7
                     : _height / 100 * 9,
             alignment: Alignment.bottomLeft,
@@ -293,10 +311,10 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
                     ? _listOfWordset[0][index]['MEANINGS']
                     : data[index]['MEANINGS'],
                 style: TextStyle(
-                    color: Colors.black,
-                    fontSize: (_width < 400)
-                        ? 11.0 * MediaQuery.textScaleFactorOf(context)
-                        : (_width >= 400 && _width < 600)
+                    color: _darkThemeChosen ? Colors.white : Colors.black,
+                    fontSize: (_width < 350)
+                        ? 13.0 * MediaQuery.textScaleFactorOf(context)
+                        : (_width >= 350 && _width < 600)
                             ? 15.0 * MediaQuery.textScaleFactorOf(context)
                             : 18.0 * MediaQuery.textScaleFactorOf(context)),
               ),
@@ -306,22 +324,24 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
           child: Container(
-            height: (_width < 400)
+            height: (_width < 350)
                 ? _height / 100 * 6
-                : (_width >= 400 && _width < 600)
+                : (_width >= 350 && _width < 600)
                     ? _height / 100 * 7
                     : _height / 100 * 9,
             alignment: Alignment.bottomLeft,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Text(
-                _listSelected ? _listOfWordset[0][index]['WORDS'] : data[index]['WORDS'],
+                _listSelected
+                    ? _listOfWordset[0][index]['WORDS']
+                    : data[index]['WORDS'],
                 style: TextStyle(
-                    color: Colors.grey[700],
+                    color: _darkThemeChosen ? Colors.white : Colors.grey[700],
                     fontFamily: 'Roboto Slab',
-                    fontSize: (_width < 400)
-                        ? 20.0 * MediaQuery.textScaleFactorOf(context)
-                        : (_width >= 400 && _width < 600)
+                    fontSize: (_width < 350)
+                        ? 22.0 * MediaQuery.textScaleFactorOf(context)
+                        : (_width >= 350 && _width < 600)
                             ? 27.0 * MediaQuery.textScaleFactorOf(context)
                             : 32.0 * MediaQuery.textScaleFactorOf(context)),
               ),
@@ -335,7 +355,9 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
             alignment: Alignment.center,
             child: LinearProgressIndicator(
               value: (_listSelected
-                  ? _listOfWordset[0].indexOf(_listOfWordset[0][index]) / 100 * 3.5
+                  ? _listOfWordset[0].indexOf(_listOfWordset[0][index]) /
+                      100 *
+                      3.5
                   : data.indexOf(data[index]) / 100 * 0.12),
             ),
           ),
@@ -357,16 +379,18 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
     if (_currentWordsetIdx != null) {
       return _favouriteItemListSet.elementAt(_currentWordsetIdx)[index]
           ? Icon(Icons.lightbulb, color: Colors.orange[700])
-          : Icon(Icons.lightbulb_outline, color: Colors.grey[700]);
+          : Icon(Icons.lightbulb_outline, color: Colors.orange[700]);
     } else {
       return _favouriteItemListFull[index]
           ? Icon(Icons.lightbulb, color: Colors.orange[700])
-          : Icon(Icons.lightbulb_outline, color: Colors.grey[700]);
+          : Icon(Icons.lightbulb_outline, color: Colors.orange[700]);
     }
   }
 
   Card cardForWords(List<Map> data, int index) {
     return Card(
+      elevation: 2.5,
+      color: _darkThemeChosen ? Colors.grey[700] : Colors.white,
       child: Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -380,13 +404,6 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: _favouriteIcon(data, index),
-
-                    // _favouriteItemList[index]
-                    //     ? Icons.lightbulb
-                    //     : Icons.lightbulb_outline,
-                    // color: _favouriteItemList[index]
-                    //     ? Colors.orangeAccent[700]
-                    //     : Colors.grey[700],
                   ),
                 ],
               ),
@@ -416,30 +433,31 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
         });
   }
 
-  dynamic _gestureChangeBgColorMode(List<Map> data, int index, DragEndDetails details) {
+  dynamic _gestureChangeBgColorMode(
+      List<Map> data, int index, DragEndDetails details) {
     Color _randomRolor = Color(Random().nextInt(0xffffffff)).withAlpha(0xff);
 
     _animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
 
-    _curvedAnimation =
-        CurvedAnimation(parent: _animationController, curve: Curves.fastOutSlowIn);
+    _curvedAnimation = CurvedAnimation(
+        parent: _animationController, curve: Curves.fastOutSlowIn);
 
     _animationController.addListener(() {
       setState(() {
-        _currentColor = _colorTween.evaluate(_curvedAnimation);
+        _backgroundColor = _colorTween.evaluate(_curvedAnimation);
       });
     });
 
     if (details.velocity.pixelsPerSecond.dx > 0) {
       if (_cardIndex > 0) {
         _cardIndex--;
-        _colorTween = ColorTween(begin: _currentColor, end: _randomRolor);
+        _colorTween = ColorTween(begin: _backgroundColor, end: _randomRolor);
       }
     } else {
       if (_cardIndex < data.length) {
         _cardIndex++;
-        _colorTween = ColorTween(begin: _currentColor, end: _randomRolor);
+        _colorTween = ColorTween(begin: _backgroundColor, end: _randomRolor);
       }
     }
     setState(() {
@@ -455,6 +473,12 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
       if (_currentWordsetIdx != null) {
         _favouriteItemListSet.elementAt(_currentWordsetIdx)[index] =
             !_favouriteItemListSet.elementAt(_currentWordsetIdx)[index];
+        // _favouriteItemListSet.elementAt(_currentWordsetIdx)[index] =
+        //     _favouriteItemListFull[index] ? true : false;
+
+        // _favouriteItemListFull[index] =
+        //     _favouriteItemListSet.elementAt(_currentWordsetIdx)[index]
+        //         ? true : false;
       } else {
         _favouriteItemListFull[index] = !_favouriteItemListFull[index];
       }
@@ -491,20 +515,26 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: _darkThemeChosen ? Colors.grey[700] : Colors.white,
           title: Text(
             "choose a set",
-            style: TextStyle(color: Colors.grey[700]),
+            style: TextStyle(
+                color: _darkThemeChosen ? Colors.white : Colors.grey[700]),
           ),
           titlePadding: EdgeInsets.symmetric(
               horizontal: MediaQuery.of(context).size.width * 0.05,
               vertical: MediaQuery.of(context).size.width * 0.04),
           contentPadding: EdgeInsets.all(0),
-          content: Wrap(
-              alignment: WrapAlignment.spaceEvenly,
-              children: [renderListOfButtonsForWordset(_listOfButtonsForWordset)]),
+          content: Wrap(alignment: WrapAlignment.spaceEvenly, children: [
+            renderListOfButtonsForWordset(_listOfButtonsForWordset)
+          ]),
           actions: <Widget>[
             new FlatButton(
-              child: new Text("Clear"),
+              child: new Text(
+                "Clear",
+                style: TextStyle(
+                    color: _darkThemeChosen ? Colors.white : Colors.blue),
+              ),
               onPressed: () {
                 setState(() {
                   _listOfWordset.clear();
@@ -513,7 +543,9 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
               },
             ),
             new FlatButton(
-              child: new Text("Close"),
+              child: new Text("Close",
+                  style: TextStyle(
+                      color: _darkThemeChosen ? Colors.white : Colors.blue)),
               onPressed: () {
                 Navigator.of(context).pop();
               },

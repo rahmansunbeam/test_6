@@ -25,8 +25,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
 
   PageController _pageController = PageController();
 
-  List<FloatingActionButton> _listOfButtonsForWordset =
-      new List<FloatingActionButton>();
+  List<FloatingActionButton> _listOfButtonsForWordset = new List<FloatingActionButton>();
   List _listOfWordset = [];
   dynamic _currentWordIdx;
   dynamic _currentWordsetIdx;
@@ -83,21 +82,18 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Padding(
-                        padding:
-                            const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 12.0),
+                        padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 12.0),
                         child: Text(
                           "Hi, there.",
                           style: TextStyle(
-                              fontSize:
-                                  26.0 * MediaQuery.textScaleFactorOf(context),
+                              fontSize: 26.0 * MediaQuery.textScaleFactorOf(context),
                               color: Colors.white),
                         ),
                       ),
                       Text(
                         "Let's learn some words today",
                         style: TextStyle(
-                            fontSize:
-                                14.0 * MediaQuery.textScaleFactorOf(context),
+                            fontSize: 14.0 * MediaQuery.textScaleFactorOf(context),
                             color: Colors.white),
                       ),
                     ],
@@ -110,15 +106,13 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 65.0),
                     child: Text(
-                      _favouriteWordList.length != null &&
-                              _favouriteWordList.length != 0
+                      _favouriteWordList.length != null && _favouriteWordList.length != 0
                           ? _favouriteWordList.length == 1
                               ? '${_favouriteWordList.length} word learned'
                               : '${_favouriteWordList.length} words learned'
                           : '',
                       style: TextStyle(
-                          fontSize:
-                              16.0 * MediaQuery.textScaleFactorOf(context),
+                          fontSize: 16.0 * MediaQuery.textScaleFactorOf(context),
                           color: Colors.white),
                     ),
                   ),
@@ -133,8 +127,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
                     // Wordset choosing button
                     Container(
                         child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       child: FloatingActionButton.extended(
                           onPressed: _showDialogForWordSet,
                           label: _currentWordsetIdx != null
@@ -333,9 +326,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Text(
-                _listSelected
-                    ? _listOfWordset[0][index]['WORDS']
-                    : data[index]['WORDS'],
+                _listSelected ? _listOfWordset[0][index]['WORDS'] : data[index]['WORDS'],
                 style: TextStyle(
                     color: _darkThemeChosen ? Colors.white : Colors.grey[700],
                     fontFamily: 'Roboto Slab',
@@ -355,9 +346,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
             alignment: Alignment.center,
             child: LinearProgressIndicator(
               value: (_listSelected
-                  ? _listOfWordset[0].indexOf(_listOfWordset[0][index]) /
-                      100 *
-                      3.5
+                  ? _listOfWordset[0].indexOf(_listOfWordset[0][index]) / 100 * 3.5
                   : data.indexOf(data[index]) / 100 * 0.12),
             ),
           ),
@@ -389,7 +378,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
 
   Card cardForWords(List<Map> data, int index) {
     return Card(
-      elevation: 2.5,
+      elevation: 3.5,
       color: _darkThemeChosen ? Colors.grey[700] : Colors.white,
       child: Container(
         child: Column(
@@ -433,15 +422,14 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
         });
   }
 
-  dynamic _gestureChangeBgColorMode(
-      List<Map> data, int index, DragEndDetails details) {
+  dynamic _gestureChangeBgColorMode(List<Map> data, int index, DragEndDetails details) {
     Color _randomRolor = Color(Random().nextInt(0xffffffff)).withAlpha(0xff);
 
     _animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
 
-    _curvedAnimation = CurvedAnimation(
-        parent: _animationController, curve: Curves.fastOutSlowIn);
+    _curvedAnimation =
+        CurvedAnimation(parent: _animationController, curve: Curves.fastOutSlowIn);
 
     _animationController.addListener(() {
       setState(() {
@@ -469,35 +457,42 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
   }
 
   dynamic _gestureAddFavourite(List<Map> data, int index) {
-    setState(() {
-      if (_currentWordsetIdx != null) {
-        _favouriteItemListSet.elementAt(_currentWordsetIdx)[index] =
-            !_favouriteItemListSet.elementAt(_currentWordsetIdx)[index];
-        // _favouriteItemListSet.elementAt(_currentWordsetIdx)[index] =
-        //     _favouriteItemListFull[index] ? true : false;
+    bool _ifChosenFrmWordset = false;
+    bool _ifChosenFrmAll = false;
 
-        // _favouriteItemListFull[index] =
-        //     _favouriteItemListSet.elementAt(_currentWordsetIdx)[index]
-        //         ? true : false;
+    _currentWordsetIdx != null
+        ? _currentWordIdx = _listOfWordset[0][index]['#']
+        : _currentWordIdx = data[index]['#'];
+
+    _favouriteWordList.contains(_currentWordIdx)
+        ? _favouriteWordList.remove(_currentWordIdx)
+        : _favouriteWordList.add(_currentWordIdx);
+
+    setState(() {
+      if (_ifChosenFrmWordset) {
+        _favouriteItemListFull[index] = true;
       } else {
-        _favouriteItemListFull[index] = !_favouriteItemListFull[index];
+        _favouriteItemListFull[index] =
+            _favouriteWordList.contains(_currentWordIdx) ? true : false;
+      }
+      _ifChosenFrmAll = _favouriteItemListFull[index] ? true : false;
+
+      
+      if (_currentWordsetIdx != null) {
+        // if (_ifChosenFrmAll) {
+        //   _favouriteItemListSet.elementAt(_currentWordsetIdx)[index] = true;
+        // }
+        // else {
+        _favouriteItemListSet.elementAt(_currentWordsetIdx)[index] =
+            _favouriteWordList.contains(_currentWordIdx) ? true : false;
+        // }
+
+        _ifChosenFrmWordset =
+            _favouriteItemListSet.elementAt(_currentWordsetIdx)[index] ? true : false;
       }
     });
 
-    if (_currentWordsetIdx != null) {
-      _currentWordIdx = _listOfWordset[0][index]['#'];
-    } else {
-      _currentWordIdx = data[index]['#'];
-    }
-
-    if (_favouriteWordList.contains(_currentWordIdx)) {
-      _favouriteWordList.remove(_currentWordIdx);
-    } else {
-      _favouriteWordList.add(_currentWordIdx);
-    }
-
     print(_favouriteWordList);
-    print(index);
   }
 
   Widget renderListOfButtonsForWordset(List<Widget> _item) {
@@ -518,22 +513,20 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
           backgroundColor: _darkThemeChosen ? Colors.grey[700] : Colors.white,
           title: Text(
             "choose a set",
-            style: TextStyle(
-                color: _darkThemeChosen ? Colors.white : Colors.grey[700]),
+            style: TextStyle(color: _darkThemeChosen ? Colors.white : Colors.grey[700]),
           ),
           titlePadding: EdgeInsets.symmetric(
               horizontal: MediaQuery.of(context).size.width * 0.05,
               vertical: MediaQuery.of(context).size.width * 0.04),
           contentPadding: EdgeInsets.all(0),
-          content: Wrap(alignment: WrapAlignment.spaceEvenly, children: [
-            renderListOfButtonsForWordset(_listOfButtonsForWordset)
-          ]),
+          content: Wrap(
+              alignment: WrapAlignment.spaceEvenly,
+              children: [renderListOfButtonsForWordset(_listOfButtonsForWordset)]),
           actions: <Widget>[
             new FlatButton(
               child: new Text(
                 "Clear",
-                style: TextStyle(
-                    color: _darkThemeChosen ? Colors.white : Colors.blue),
+                style: TextStyle(color: _darkThemeChosen ? Colors.white : Colors.blue),
               ),
               onPressed: () {
                 setState(() {
@@ -544,8 +537,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
             ),
             new FlatButton(
               child: new Text("Close",
-                  style: TextStyle(
-                      color: _darkThemeChosen ? Colors.white : Colors.blue)),
+                  style: TextStyle(color: _darkThemeChosen ? Colors.white : Colors.blue)),
               onPressed: () {
                 Navigator.of(context).pop();
               },

@@ -34,6 +34,7 @@ dev_dependencies:
     sdk: flutter
   csv: ^4.0.3
   quiver: ^2.1.4+1
+  flutter_spinkit: ^4.1.2+1
   shared_preferences: ^0.5.12+4
 
 # For information on the generic Dart part of this file, see the

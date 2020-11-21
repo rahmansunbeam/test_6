@@ -28,13 +28,12 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
 
   PageController _pageController = PageController();
 
-  List<FloatingActionButton> _listOfButtonsForWordset =
-      new List<FloatingActionButton>();
+  List<FloatingActionButton> _listOfButtonsForWordset = new List<FloatingActionButton>();
   List _listOfWordset = [];
   dynamic _currentWordIdx;
   dynamic _currentWordsetIdx;
-  
-  static List<bool> _favouriteItemListFull = [];
+
+  List<bool> _favouriteItemListFull = [];
   Iterable<List<bool>> _favouriteItemListSet = [];
   List _favouriteWordList = [];
 
@@ -45,11 +44,8 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
     _pageController = new PageController();
 
     // get theme from memory
-    getThemeFromMemory('key').then((value) => _darkThemeChosen = value);
+    // getThemeFromMemory().then((value) => _darkThemeChosen = value);
     _backgroundColor = _darkThemeChosen ? Colors.black : Colors.teal[700];
-
-    // get _favouriteItemListFull from memory
-    getFavouriteFromMemory('key').then((value) => _favouriteItemListFull =value);
   }
 
   // dark theme toggle button method
@@ -63,6 +59,12 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     double _height = MediaQuery.of(context).size.height / 100;
+
+    // getting favourite word list from memory
+    getFavWordsFromMemory().then((value) {
+      _favouriteWordList = value;
+    });
+
     return new Scaffold(
       appBar: new AppBar(
         backgroundColor: _darkThemeChosen ? Colors.black : _backgroundColor,
@@ -96,21 +98,18 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Padding(
-                        padding:
-                            const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 12.0),
+                        padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 12.0),
                         child: Text(
                           "Hi, there.",
                           style: TextStyle(
-                              fontSize:
-                                  26.0 * MediaQuery.textScaleFactorOf(context),
+                              fontSize: 26.0 * MediaQuery.textScaleFactorOf(context),
                               color: Colors.white),
                         ),
                       ),
                       Text(
                         "Let's learn some words today",
                         style: TextStyle(
-                            fontSize:
-                                14.0 * MediaQuery.textScaleFactorOf(context),
+                            fontSize: 14.0 * MediaQuery.textScaleFactorOf(context),
                             color: Colors.white),
                       ),
                     ],
@@ -123,15 +122,13 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 65.0),
                     child: Text(
-                      _favouriteWordList.length != null &&
-                              _favouriteWordList.length != 0
+                      _favouriteWordList.length != null && _favouriteWordList.length != 0
                           ? _favouriteWordList.length == 1
                               ? '${_favouriteWordList.length} word learned'
                               : '${_favouriteWordList.length} words learned'
                           : '',
                       style: TextStyle(
-                          fontSize:
-                              16.0 * MediaQuery.textScaleFactorOf(context),
+                          fontSize: 16.0 * MediaQuery.textScaleFactorOf(context),
                           color: Colors.white),
                     ),
                   ),
@@ -146,8 +143,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
                     // Wordset choosing button
                     Container(
                         child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       child: FloatingActionButton.extended(
                           onPressed: _showDialogForWordSet,
                           label: _currentWordsetIdx != null
@@ -191,8 +187,17 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
     // Populating favourite list for cards
     if (_favouriteItemListFull.length < data.length) {
       List.generate(data.length, (i) => _favouriteItemListFull.add(false));
-      _favouriteItemListSet = partition(_favouriteItemListFull, 30).toList();
     }
+
+    // get _favouriteItemListFull from memory
+    getFavouriteFromMemory().then((value) {
+      if (value.length > 0) {
+        setState(() {
+          _favouriteItemListFull = value;
+        });
+      }
+      _favouriteItemListSet = partition(_favouriteItemListFull, 30).toList();
+    });
 
     // Populating buttons for wordset
     Iterable<List> _dataItems = partition(data, 30);
@@ -339,9 +344,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Text(
-                _listSelected
-                    ? _listOfWordset[0][index]['WORDS']
-                    : data[index]['WORDS'],
+                _listSelected ? _listOfWordset[0][index]['WORDS'] : data[index]['WORDS'],
                 style: TextStyle(
                     color: _darkThemeChosen ? Colors.white : Colors.grey[700],
                     fontFamily: 'Roboto Slab',
@@ -361,9 +364,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
             alignment: Alignment.center,
             child: LinearProgressIndicator(
               value: (_listSelected
-                  ? _listOfWordset[0].indexOf(_listOfWordset[0][index]) /
-                      100 *
-                      3.5
+                  ? _listOfWordset[0].indexOf(_listOfWordset[0][index]) / 100 * 3.5
                   : data.indexOf(data[index]) / 100 * 0.12),
             ),
           ),
@@ -439,8 +440,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
         });
   }
 
-  dynamic _gestureChangeBgColorMode(
-      List<Map> data, int index, DragEndDetails details) {
+  dynamic _gestureChangeBgColorMode(List<Map> data, int index, DragEndDetails details) {
     AnimationController _animationController;
     ColorTween _colorTween;
     CurvedAnimation _curvedAnimation;
@@ -449,8 +449,8 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
     _animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
 
-    _curvedAnimation = CurvedAnimation(
-        parent: _animationController, curve: Curves.fastOutSlowIn);
+    _curvedAnimation =
+        CurvedAnimation(parent: _animationController, curve: Curves.fastOutSlowIn);
 
     _animationController.addListener(() {
       setState(() {
@@ -512,11 +512,12 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
             _favouriteWordList.contains(_currentWordIdx) ? true : false;
         _favouriteItemListSet.elementAt(_activeSet)[_activeSetIdx] =
             _favouriteWordList.contains(_currentWordIdx) ? true : false;
-      }      
+      }
     });
-
     // save _favouriteItemListFull to the memory
     setFavouriteToMemory(_favouriteItemListFull);
+    // save favourite word list to memory
+    setFavWordsToMemory(_favouriteWordList);
   }
 
   Widget renderListOfButtonsForWordset(List<Widget> _item) {
@@ -537,22 +538,20 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
           backgroundColor: _darkThemeChosen ? Colors.grey[700] : Colors.white,
           title: Text(
             "choose a set",
-            style: TextStyle(
-                color: _darkThemeChosen ? Colors.white : Colors.grey[700]),
+            style: TextStyle(color: _darkThemeChosen ? Colors.white : Colors.grey[700]),
           ),
           titlePadding: EdgeInsets.symmetric(
               horizontal: MediaQuery.of(context).size.width * 0.05,
               vertical: MediaQuery.of(context).size.width * 0.04),
           contentPadding: EdgeInsets.all(0),
-          content: Wrap(alignment: WrapAlignment.spaceEvenly, children: [
-            renderListOfButtonsForWordset(_listOfButtonsForWordset)
-          ]),
+          content: Wrap(
+              alignment: WrapAlignment.spaceEvenly,
+              children: [renderListOfButtonsForWordset(_listOfButtonsForWordset)]),
           actions: <Widget>[
             new FlatButton(
               child: new Text(
                 "Clear",
-                style: TextStyle(
-                    color: _darkThemeChosen ? Colors.white : Colors.blue),
+                style: TextStyle(color: _darkThemeChosen ? Colors.white : Colors.blue),
               ),
               onPressed: () {
                 setState(() {
@@ -563,8 +562,7 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
             ),
             new FlatButton(
               child: new Text("Close",
-                  style: TextStyle(
-                      color: _darkThemeChosen ? Colors.white : Colors.blue)),
+                  style: TextStyle(color: _darkThemeChosen ? Colors.white : Colors.blue)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -577,11 +575,11 @@ class _WordHomeState extends State<WordHome> with TickerProviderStateMixin {
 }
 
 // set system theme to system memory
-Future<bool> getThemeFromMemory(String key) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  bool value = prefs.getBool(key) ?? false;
-  return value;
-}
+// Future<bool> getThemeFromMemory() async {
+//   SharedPreferences prefs = await SharedPreferences.getInstance();
+//   bool value = prefs.getBool('key') ?? false;
+//   return value;
+// }
 
 Future<void> setThemeToMemory(bool value) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -589,15 +587,26 @@ Future<void> setThemeToMemory(bool value) async {
 }
 
 // set favourite list to memory _favouriteItemListFull
-Future<List<bool>> getFavouriteFromMemory(String key) async {
+Future<List<bool>> getFavouriteFromMemory() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  List<bool> value = json.decode(prefs.getString(key)) ?? "";
-  print(value.runtimeType);
+  List<String> val = prefs.getStringList('favouriteList') ?? List<String>();
+  List<bool> value = val.map((e) => e == 'true' ? true : false).toList();
   return value;
 }
 
-Future<void> setFavouriteToMemory(List _list) async {
-  String value = json.encode(_list);
+Future<void> setFavouriteToMemory(List<bool> value) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.setString('key', value);
+  prefs.setStringList('favouriteList', value.map((i) => i.toString()).toList());
+}
+
+// set favourite list to memory _favouriteItemListFull
+Future<List<int>> getFavWordsFromMemory() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  List<int> value = prefs.getStringList('favWordList').map(int.parse).toList();
+  return value;
+}
+
+Future<void> setFavWordsToMemory(List value) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setStringList('favWordList', value.map((i) => i.toString()).toList());
 }

@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void navigationPage() {
     Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (BuildContext context) => WordHome()));
+        MaterialPageRoute(builder: (BuildContext context) => WordHomePage()));
   }
 
   @override

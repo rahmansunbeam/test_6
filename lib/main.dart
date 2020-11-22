@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {        
         '/': (context) => SplashScreen(),
-        '/home': (context) => WordHome(),
+        '/home': (context) => WordHomePage(),
       },
     );
   }

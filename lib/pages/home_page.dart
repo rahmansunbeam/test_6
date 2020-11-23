@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quiver/iterables.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:test_6/pages/dialogbox_page.dart';
 import 'package:test_6/services/shared_pref_service.dart';
 import 'package:test_6/services/load_asset_service.dart';
 import 'dart:math';
@@ -160,7 +161,18 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
                         child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       child: FloatingActionButton.extended(
-                          onPressed: _showDialogForWordSet,
+                          // onPressed: _showDialogForWordSet,
+                          onPressed: () => showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return dialogboxForWordset(
+                                    context,
+                                    _darkThemeChosen,
+                                    _listOfButtonsForWordset,
+                                    // set state for these variables
+                                    _listOfWordset,
+                                    _currentWordsetIdx);
+                              }),
                           label: _currentWordsetIdx != null
                               ? Text('Wordset #${_currentWordsetIdx + 1}')
                               : Text('Wordset')),
@@ -535,58 +547,5 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
     setFavListToMemory(_favouriteItemListFull);
     // save favourite word list to memory
     if (_favouriteWordList != null) setFavWordsToMemory(_favouriteWordList);
-  }
-
-  Widget renderListOfButtonsForWordset(List<Widget> _item) {
-    List<Widget> list = List<Widget>();
-    for (var i = 0; i < _item.length; i++) {
-      if (_item[i] != null) {
-        list.add(_item[i]);
-      }
-    }
-    return Wrap(children: list, alignment: WrapAlignment.start);
-  }
-
-  void _showDialogForWordSet() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: _darkThemeChosen ? Colors.grey[700] : Colors.white,
-          title: Text(
-            "choose a set",
-            style: TextStyle(color: _darkThemeChosen ? Colors.white : Colors.grey[700]),
-          ),
-          titlePadding: EdgeInsets.symmetric(
-              horizontal: MediaQuery.of(context).size.width * 0.05,
-              vertical: MediaQuery.of(context).size.width * 0.04),
-          contentPadding: EdgeInsets.all(0),
-          content: Wrap(
-              alignment: WrapAlignment.spaceEvenly,
-              children: [renderListOfButtonsForWordset(_listOfButtonsForWordset)]),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text(
-                "Clear",
-                style: TextStyle(color: _darkThemeChosen ? Colors.white : Colors.blue),
-              ),
-              onPressed: () {
-                setState(() {
-                  _listOfWordset.clear();
-                  _currentWordsetIdx = null;
-                });
-              },
-            ),
-            new FlatButton(
-              child: new Text("Close",
-                  style: TextStyle(color: _darkThemeChosen ? Colors.white : Colors.blue)),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 }

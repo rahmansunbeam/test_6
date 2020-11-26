@@ -13,12 +13,11 @@ class WordHomePage extends StatefulWidget {
 }
 
 class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMixin {
-  Future<List<Map>> _loadAsset;
-  int _cardIndex = 0;
+  PageController _pageController = PageController();
+  Future<List<Map>> _loadAsset;    
   static bool _darkThemeChosen = false;
   static Color _backgroundColor;
-
-  PageController _pageController = PageController();
+  int _cardIndex = 0;
 
   List<FloatingActionButton> _listOfButtonsForWordset = new List<FloatingActionButton>();
   List _listOfWordset = [];

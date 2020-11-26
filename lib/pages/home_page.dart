@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quiver/iterables.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:test_6/pages/dialogbox_page.dart';
+import 'package:test_6/pages/words_page.dart';
 import 'package:test_6/services/shared_pref_service.dart';
 import 'package:test_6/services/load_asset_service.dart';
 import 'dart:math';
@@ -169,7 +170,7 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
                                     listOfButtonsForWordset: _listOfButtonsForWordset,
                                     callback: () {
                                       setState(() {
-                                        _listOfWordset.clear();
+                                        _favouriteWordList.clear();
                                         _currentWordsetIdx = null;
                                       });
                                     });
@@ -279,136 +280,23 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
     );
   }
 
-  // Antonyms and synonyms chips are processed
-  Widget listOfWordsToMakeChips(List<String> _item, Color _bgColor) {
-    double _width = MediaQuery.of(context).size.width;
-    List<Widget> list = List<Widget>();
-    for (var i = 0; i < _item.length; i++) {
-      if (_item[i] != 'N/A') {
-        list.add(Chip(
-            label: Text(_item[i],
-                style: TextStyle(
-                  fontSize: (_width < 350)
-                      ? 12.0 * MediaQuery.textScaleFactorOf(context)
-                      : (_width >= 350 && _width < 600)
-                          ? 13.0 * MediaQuery.textScaleFactorOf(context)
-                          : 14.0 * MediaQuery.textScaleFactorOf(context),
-                )),
-            backgroundColor: _bgColor));
-      }
-    }
-    return Wrap(runSpacing: -16, spacing: 2, children: list);
-  }
-
-  // Render words inside the card
-  Column wordsToRender(List<Map> data, int index, bool _listSelected) {
-    double _height = MediaQuery.of(context).size.height;
-    double _width = MediaQuery.of(context).size.width;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Container(
-            height: (_width < 350)
-                ? _height / 100 * 12
-                : (_width >= 350 && _width < 600)
-                    ? _height / 100 * 14
-                    : _height / 100 * 15,
-            child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    listOfWordsToMakeChips(
-                        _listSelected
-                            ? _listOfWordset[0][index]['ANTONYMS'].split('| ')
-                            : data[index]['ANTONYMS'].split('| '),
-                        Colors.pink[100]),
-                    listOfWordsToMakeChips(
-                        _listSelected
-                            ? _listOfWordset[0][index]['SYNONYMS'].split('| ')
-                            : data[index]['SYNONYMS'].split('| '),
-                        Colors.teal[100]),
-                  ],
-                )),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Container(
-            height: (_width < 350)
-                ? _height / 100 * 8
-                : (_width >= 350 && _width < 600)
-                    ? _height / 100 * 7
-                    : _height / 100 * 9,
-            alignment: Alignment.bottomLeft,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Text(
-                _listSelected
-                    ? _listOfWordset[0][index]['MEANINGS']
-                    : data[index]['MEANINGS'],
-                style: TextStyle(
-                    color: _darkThemeChosen ? Colors.white : Colors.black,
-                    fontSize: (_width < 350)
-                        ? 13.0 * MediaQuery.textScaleFactorOf(context)
-                        : (_width >= 350 && _width < 600)
-                            ? 15.0 * MediaQuery.textScaleFactorOf(context)
-                            : 18.0 * MediaQuery.textScaleFactorOf(context)),
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-          child: Container(
-            height: (_width < 350)
-                ? _height / 100 * 6
-                : (_width >= 350 && _width < 600)
-                    ? _height / 100 * 7
-                    : _height / 100 * 9,
-            alignment: Alignment.bottomLeft,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Text(
-                _listSelected ? _listOfWordset[0][index]['WORDS'] : data[index]['WORDS'],
-                style: TextStyle(
-                    color: _darkThemeChosen ? Colors.white : Colors.grey[700],
-                    fontFamily: 'Roboto Slab',
-                    fontSize: (_width < 350)
-                        ? 22.0 * MediaQuery.textScaleFactorOf(context)
-                        : (_width >= 350 && _width < 600)
-                            ? 27.0 * MediaQuery.textScaleFactorOf(context)
-                            : 32.0 * MediaQuery.textScaleFactorOf(context)),
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-          child: Container(
-            height: _height / 100 * 0.5,
-            alignment: Alignment.center,
-            child: LinearProgressIndicator(
-              value: (_listSelected
-                  ? _listOfWordset[0].indexOf(_listOfWordset[0][index]) / 100 * 3.5
-                  : data.indexOf(data[index]) / 100 * 0.12),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Widget to appear items on the card
   Widget wordsetToRenderOnCards(List<Map> data, int index) {
     if (_currentWordsetIdx != null) {
-      return wordsToRender(data, index, true);
+      return WordsToRender(
+        darkThemeChosen: _darkThemeChosen,
+        listOfWordset: _listOfWordset,
+        data: data,
+        index: index,
+        listSelected: true,
+      );
     } else {
-      return wordsToRender(data, index, false);
+      return WordsToRender(
+        darkThemeChosen: _darkThemeChosen,
+        listOfWordset: _listOfWordset,
+        data: data,
+        index: index,
+        listSelected: false,
+      );
     }
   }
 

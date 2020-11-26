@@ -161,17 +161,18 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
                         child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       child: FloatingActionButton.extended(
-                          // onPressed: _showDialogForWordSet,
                           onPressed: () => showDialog(
                               context: context,
                               builder: (BuildContext context) {
-                                return dialogboxForWordset(
-                                    context,
-                                    _darkThemeChosen,
-                                    _listOfButtonsForWordset,
-                                    // set state for these variables
-                                    _listOfWordset,
-                                    _currentWordsetIdx);
+                                return DialogboxForWordset(
+                                    darkThemeChosen: _darkThemeChosen,
+                                    listOfButtonsForWordset: _listOfButtonsForWordset,
+                                    callback: () {
+                                      setState(() {
+                                        _listOfWordset.clear();
+                                        _currentWordsetIdx = null;
+                                      });
+                                    });
                               }),
                           label: _currentWordsetIdx != null
                               ? Text('Wordset #${_currentWordsetIdx + 1}')

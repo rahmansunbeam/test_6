@@ -5,6 +5,7 @@ import 'package:test_6/pages/dialogbox_page.dart';
 import 'package:test_6/pages/words_page.dart';
 import 'package:test_6/services/shared_pref_service.dart';
 import 'package:test_6/services/load_asset_service.dart';
+import 'package:test_6/services/custom_icon_service.dart';
 import 'dart:math';
 
 class WordHomePage extends StatefulWidget {
@@ -13,11 +14,15 @@ class WordHomePage extends StatefulWidget {
 }
 
 class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMixin {
-  PageController _pageController = PageController();
-  Future<List<Map>> _loadAsset;    
-  static bool _darkThemeChosen = false;
+  Future<List<Map>> _loadAsset;
   static Color _backgroundColor;
+  static bool _darkThemeChosen = false;
+  PageController _pageController = PageController();
+
   int _cardIndex = 0;
+  AnimationController _animationController;
+  ColorTween _colorTween;
+  CurvedAnimation _curvedAnimation;
 
   List<FloatingActionButton> _listOfButtonsForWordset = new List<FloatingActionButton>();
   List _listOfWordset = [];
@@ -63,10 +68,18 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
         centerTitle: true,
         actions: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(right: 16.0),
+            padding: const EdgeInsets.only(right: 4.0),
             child: IconButton(
               onPressed: _darkModeToggle,
-              icon: Icon(Icons.sync),
+              icon: _darkThemeChosen ? Icon(CustomIcon.moon) : Icon(CustomIcon.sunny),
+              splashRadius: 20,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: IconButton(
+              onPressed: () {},
+              icon: Icon(CustomIcon.info),
               splashRadius: 20,
             ),
           ),
@@ -358,9 +371,6 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
   }
 
   dynamic _gestureChangeBgColorMode(List<Map> data, int index, DragEndDetails details) {
-    AnimationController _animationController;
-    ColorTween _colorTween;
-    CurvedAnimation _curvedAnimation;
     Color _randomColor = Color(Random().nextInt(0xffffffff)).withAlpha(0xff);
 
     _animationController =
@@ -386,6 +396,7 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
         _colorTween = ColorTween(begin: _backgroundColor, end: _randomColor);
       }
     }
+
     setState(() {
       _pageController.animateTo((_cardIndex) * 256.0,
           duration: Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);

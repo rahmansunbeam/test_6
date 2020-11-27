@@ -37,7 +37,7 @@ class CsvToMapConverter {
 }
 
 Future<List<Map>> loadAsset() async {
-  var myData = await rootBundle.loadString("assets/wordlist.csv");
+  var myData = await rootBundle.loadString("assets/wordlist/wordlist.csv");
   List<Map<String, dynamic>> csvTable = CsvToMapConverter().convert(myData);
 
   // Create list of items for each row

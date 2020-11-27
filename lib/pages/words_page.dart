@@ -48,13 +48,13 @@ class _WordsToRenderState extends State<WordsToRender> {
                             ? widget.listOfWordset[0][widget.index]['ANTONYMS']
                                 .split('| ')
                             : widget.data[widget.index]['ANTONYMS'].split('| '),
-                        Colors.pink[100]),
+                        Colors.amber),
                     listOfWordsToMakeChips(
                         widget.listSelected
                             ? widget.listOfWordset[0][widget.index]['SYNONYMS']
                                 .split('| ')
                             : widget.data[widget.index]['SYNONYMS'].split('| '),
-                        Colors.teal[100]),
+                        Colors.tealAccent),
                   ],
                 )),
           ),
@@ -77,10 +77,10 @@ class _WordsToRenderState extends State<WordsToRender> {
                 style: TextStyle(
                     color: widget.darkThemeChosen ? Colors.white : Colors.black,
                     fontSize: (_width < 350)
-                        ? 13.0 * MediaQuery.textScaleFactorOf(context)
+                        ? 12.0 * MediaQuery.textScaleFactorOf(context)
                         : (_width >= 350 && _width < 600)
-                            ? 15.0 * MediaQuery.textScaleFactorOf(context)
-                            : 18.0 * MediaQuery.textScaleFactorOf(context)),
+                            ? 13.0 * MediaQuery.textScaleFactorOf(context)
+                            : 14.0 * MediaQuery.textScaleFactorOf(context)),
               ),
             ),
           ),
@@ -106,8 +106,8 @@ class _WordsToRenderState extends State<WordsToRender> {
                     fontSize: (_width < 350)
                         ? 22.0 * MediaQuery.textScaleFactorOf(context)
                         : (_width >= 350 && _width < 600)
-                            ? 27.0 * MediaQuery.textScaleFactorOf(context)
-                            : 32.0 * MediaQuery.textScaleFactorOf(context)),
+                            ? 25.0 * MediaQuery.textScaleFactorOf(context)
+                            : 30.0 * MediaQuery.textScaleFactorOf(context)),
               ),
             ),
           ),
@@ -141,10 +141,10 @@ class _WordsToRenderState extends State<WordsToRender> {
             label: Text(_item[i],
                 style: TextStyle(
                   fontSize: (_width < 350)
-                      ? 12.0 * MediaQuery.textScaleFactorOf(context)
+                      ? 11.0 * MediaQuery.textScaleFactorOf(context)
                       : (_width >= 350 && _width < 600)
-                          ? 13.0 * MediaQuery.textScaleFactorOf(context)
-                          : 14.0 * MediaQuery.textScaleFactorOf(context),
+                          ? 12.0 * MediaQuery.textScaleFactorOf(context)
+                          : 13.0 * MediaQuery.textScaleFactorOf(context),
                 )),
             backgroundColor: _bgColor));
       }

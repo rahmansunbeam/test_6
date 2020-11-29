@@ -40,8 +40,20 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
     _pageController = new PageController();
 
     // get theme from memory
-    getThemeFromMemory().then((value) => _darkThemeChosen = value);
-    _backgroundColor = _darkThemeChosen ? Colors.black : Colors.teal[700];
+    // TODO - get the darktheme sorted
+    initDarkTheme();
+  }
+
+  void initDarkTheme() {
+    setState(() {
+      if (_darkThemeChosen == null) {
+        _darkThemeChosen = false;
+        _backgroundColor = Colors.teal[700];
+      } else {
+        getThemeFromMemory().then((value) => _darkThemeChosen = value);
+        _backgroundColor = _darkThemeChosen ? Colors.black : Colors.teal[700];
+      }
+    });
   }
 
   // dark theme toggle button method

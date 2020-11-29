@@ -3,6 +3,7 @@ import 'package:quiver/iterables.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:test_6/pages/dialogbox_page.dart';
 import 'package:test_6/pages/words_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test_6/services/shared_pref_service.dart';
 import 'package:test_6/services/load_asset_service.dart';
 import 'package:test_6/services/custom_icon_service.dart';
@@ -13,18 +14,21 @@ class WordHomePage extends StatefulWidget {
   _WordHomePageState createState() => _WordHomePageState();
 }
 
-class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMixin {
+class _WordHomePageState extends State<WordHomePage>
+    with TickerProviderStateMixin {
   Future<List<Map>> _loadAsset;
-  static Color _backgroundColor;
-  static bool _darkThemeChosen = false;
-  PageController _pageController = PageController();
+  PageController _pageController;
 
   int _cardIndex = 0;
   AnimationController _animationController;
   ColorTween _colorTween;
   CurvedAnimation _curvedAnimation;
 
-  List<FloatingActionButton> _listOfButtonsForWordset = new List<FloatingActionButton>();
+  Color _backgroundColor;
+  bool _darkThemeChosen;
+
+  List<FloatingActionButton> _listOfButtonsForWordset =
+      new List<FloatingActionButton>();
   List _listOfWordset = [];
   dynamic _currentWordIdx;
   dynamic _currentWordsetIdx;
@@ -40,7 +44,10 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
     _pageController = new PageController();
 
     // get theme from memory
-    getThemeFromMemory().then((value) => _darkThemeChosen = value);
+    // TODO - Make _darkThemeChosen load data from shre pref
+    // SharedPreferences.getInstance().then((value) =>
+    //     setState(() => _darkThemeChosen = value.getBool('themekey')));
+    getThemeFromMemory().then((value) => setState(() => _darkThemeChosen = value));
     _backgroundColor = _darkThemeChosen ? Colors.black : Colors.teal[700];
   }
 
@@ -71,7 +78,9 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
             padding: const EdgeInsets.only(right: 4.0),
             child: IconButton(
               onPressed: _darkModeToggle,
-              icon: _darkThemeChosen ? Icon(CustomIcon.moon) : Icon(CustomIcon.sunny),
+              icon: _darkThemeChosen
+                  ? Icon(CustomIcon.moon)
+                  : Icon(CustomIcon.sunny),
               splashRadius: 20,
             ),
           ),
@@ -103,18 +112,21 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 12.0),
+                        padding:
+                            const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 12.0),
                         child: Text(
                           "Hi, there.",
                           style: TextStyle(
-                              fontSize: 26.0 * MediaQuery.textScaleFactorOf(context),
+                              fontSize:
+                                  26.0 * MediaQuery.textScaleFactorOf(context),
                               color: Colors.white),
                         ),
                       ),
                       Text(
                         "Let's learn some words today",
                         style: TextStyle(
-                            fontSize: 14.0 * MediaQuery.textScaleFactorOf(context),
+                            fontSize:
+                                14.0 * MediaQuery.textScaleFactorOf(context),
                             color: Colors.white),
                       ),
                     ],
@@ -137,7 +149,8 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
                                   : '${_favouriteWordList.length} words learned'
                               : '',
                           style: TextStyle(
-                              fontSize: 16.0 * MediaQuery.textScaleFactorOf(context),
+                              fontSize:
+                                  16.0 * MediaQuery.textScaleFactorOf(context),
                               color: Colors.white),
                         ),
                         IconButton(
@@ -172,14 +185,16 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
                     // Wordset choosing button
                     Container(
                         child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
                       child: FloatingActionButton.extended(
                           onPressed: () => showDialog(
                               context: context,
                               builder: (BuildContext context) {
                                 return DialogboxForWordset(
                                     darkThemeChosen: _darkThemeChosen,
-                                    listOfButtonsForWordset: _listOfButtonsForWordset,
+                                    listOfButtonsForWordset:
+                                        _listOfButtonsForWordset,
                                     callback: () {
                                       setState(() {
                                         _favouriteWordList.clear();
@@ -370,14 +385,15 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
         });
   }
 
-  dynamic _gestureChangeBgColorMode(List<Map> data, int index, DragEndDetails details) {
+  dynamic _gestureChangeBgColorMode(
+      List<Map> data, int index, DragEndDetails details) {
     Color _randomColor = Color(Random().nextInt(0xffffffff)).withAlpha(0xff);
 
     _animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
 
-    _curvedAnimation =
-        CurvedAnimation(parent: _animationController, curve: Curves.fastOutSlowIn);
+    _curvedAnimation = CurvedAnimation(
+        parent: _animationController, curve: Curves.fastOutSlowIn);
 
     _animationController.addListener(() {
       setState(() {

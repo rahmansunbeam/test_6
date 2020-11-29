@@ -6,6 +6,7 @@ import 'package:test_6/services/words_service.dart';
 import 'package:test_6/model/shared_pref_service.dart';
 import 'package:test_6/model/load_asset_service.dart';
 import 'package:test_6/services/custom_icon_service.dart';
+import 'package:test_6/services/info_dialog_service.dart';
 import 'dart:math';
 
 class WordHomePage extends StatefulWidget {
@@ -55,7 +56,8 @@ class _WordHomePageState extends State<WordHomePage>
     double _height = MediaQuery.of(context).size.height / 100;
 
     // get dark theme from memory if exists
-    getThemeFromMemory().then((value) => setState(() =>_darkThemeChosen = value));
+    getThemeFromMemory()
+        .then((value) => setState(() => _darkThemeChosen = value));
 
     // getting favourite word list from memory
     getFavWordsFromMemory().then((value) => _favouriteWordList = value);
@@ -78,7 +80,11 @@ class _WordHomePageState extends State<WordHomePage>
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: IconButton(
-              onPressed: () {},
+              onPressed: () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return InfoDialogbox(darkThemeChosen: _darkThemeChosen,);
+                  }),
               icon: Icon(CustomIcon.info),
               splashRadius: 20,
             ),

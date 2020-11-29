@@ -45,18 +45,10 @@ class _WordHomePageState extends State<WordHomePage>
 
     // get theme from memory
     // TODO - Make _darkThemeChosen load data from shre pref
-    // SharedPreferences.getInstance().then((value) =>
-    //     setState(() => _darkThemeChosen = value.getBool('themekey')));
-    getThemeFromMemory().then((value) => setState(() => _darkThemeChosen = value));
+    SharedPreferences.getInstance().then((value) =>
+        setState(() => _darkThemeChosen = value.getBool('themekey')));
+    // getThemeFromMemory().then((value) => setState(() => _darkThemeChosen = value));
     _backgroundColor = _darkThemeChosen ? Colors.black : Colors.teal[700];
-  }
-
-  // dark theme toggle button method
-  void _darkModeToggle() {
-    setState(() {
-      _darkThemeChosen = !_darkThemeChosen;
-    });
-    setThemeToMemory(_darkThemeChosen);
   }
 
   @override

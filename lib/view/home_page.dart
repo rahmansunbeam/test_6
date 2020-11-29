@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:quiver/iterables.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:test_6/pages/dialogbox_page.dart';
-import 'package:test_6/pages/words_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:test_6/services/shared_pref_service.dart';
-import 'package:test_6/services/load_asset_service.dart';
+import 'package:test_6/services/dialogbox_service.dart';
+import 'package:test_6/services/words_service.dart';
+import 'package:test_6/model/shared_pref_service.dart';
+import 'package:test_6/model/load_asset_service.dart';
 import 'package:test_6/services/custom_icon_service.dart';
 import 'dart:math';
 
@@ -24,8 +23,8 @@ class _WordHomePageState extends State<WordHomePage>
   ColorTween _colorTween;
   CurvedAnimation _curvedAnimation;
 
+  bool _darkThemeChosen = false;
   Color _backgroundColor;
-  bool _darkThemeChosen;
 
   List<FloatingActionButton> _listOfButtonsForWordset =
       new List<FloatingActionButton>();
@@ -43,28 +42,28 @@ class _WordHomePageState extends State<WordHomePage>
     _loadAsset = loadAsset();
     _pageController = new PageController();
 
-    // get theme from memory
-    // TODO - Make _darkThemeChosen load data from shre pref
-    SharedPreferences.getInstance().then((value) =>
-        setState(() => _darkThemeChosen = value.getBool('themekey')));
-    // getThemeFromMemory().then((value) => setState(() => _darkThemeChosen = value));
     _backgroundColor = _darkThemeChosen ? Colors.black : Colors.teal[700];
+  }
+
+  void _darkModeToggle() {
+    _darkThemeChosen = !_darkThemeChosen;
+    setThemeToMemory(_darkThemeChosen);
   }
 
   @override
   Widget build(BuildContext context) {
     double _height = MediaQuery.of(context).size.height / 100;
 
+    // get dark theme from memory if exists
+    getThemeFromMemory().then((value) => setState(() =>_darkThemeChosen = value));
+
     // getting favourite word list from memory
-    getFavWordsFromMemory().then((value) {
-      _favouriteWordList = value;
-    });
+    getFavWordsFromMemory().then((value) => _favouriteWordList = value);
 
     // main ui Scaffold
     return new Scaffold(
       appBar: new AppBar(
         backgroundColor: _darkThemeChosen ? Colors.black : _backgroundColor,
-        centerTitle: true,
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.only(right: 4.0),
@@ -426,33 +425,37 @@ class _WordHomePageState extends State<WordHomePage>
         ? _favouriteWordList.remove(_currentWordIdx)
         : _favouriteWordList.add(_currentWordIdx);
 
-    setState(() {
-      // find the position of the item within the _favouriteItemListSet
-      _tempList.forEach((element) {
-        return element.forEach((e) {
-          if (e['#'] == _currentWordIdx) {
-            _activeSet = _tempList.indexOf(element);
-            _activeSetIdx = element.indexOf(e);
-          }
-        });
-      });
-
-      // set the favourite words among wordsets
-      if (_currentWordsetIdx != null) {
-        _favouriteItemListSet.elementAt(_currentWordsetIdx)[index] =
-            _favouriteWordList.contains(_currentWordIdx) ? true : false;
-        _favouriteItemListFull[_currentWordIdx - 1] =
-            _favouriteWordList.contains(_currentWordIdx) ? true : false;
-      } else {
-        _favouriteItemListFull[index] =
-            _favouriteWordList.contains(_currentWordIdx) ? true : false;
-        _favouriteItemListSet.elementAt(_activeSet)[_activeSetIdx] =
-            _favouriteWordList.contains(_currentWordIdx) ? true : false;
-      }
-    });
+    setState(
+        () => setStateForGesture(_tempList, _activeSet, _activeSetIdx, index));
     // save _favouriteItemListFull to the memory
     setFavListToMemory(_favouriteItemListFull);
     // save favourite word list to memory
     if (_favouriteWordList != null) setFavWordsToMemory(_favouriteWordList);
+  }
+
+  void setStateForGesture(
+      List _tempList, int _activeSet, int _activeSetIdx, int index) {
+    // find the position of the item within the _favouriteItemListSet
+    _tempList.forEach((element) {
+      return element.forEach((e) {
+        if (e['#'] == _currentWordIdx) {
+          _activeSet = _tempList.indexOf(element);
+          _activeSetIdx = element.indexOf(e);
+        }
+      });
+    });
+
+    // set the favourite words among wordsets
+    if (_currentWordsetIdx != null) {
+      _favouriteItemListSet.elementAt(_currentWordsetIdx)[index] =
+          _favouriteWordList.contains(_currentWordIdx) ? true : false;
+      _favouriteItemListFull[_currentWordIdx - 1] =
+          _favouriteWordList.contains(_currentWordIdx) ? true : false;
+    } else {
+      _favouriteItemListFull[index] =
+          _favouriteWordList.contains(_currentWordIdx) ? true : false;
+      _favouriteItemListSet.elementAt(_activeSet)[_activeSetIdx] =
+          _favouriteWordList.contains(_currentWordIdx) ? true : false;
+    }
   }
 }

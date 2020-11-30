@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:quiver/iterables.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:test_6/services/dialogbox_service.dart';
-import 'package:test_6/services/words_service.dart';
 import 'package:test_6/model/shared_pref_service.dart';
 import 'package:test_6/model/load_asset_service.dart';
+import 'package:test_6/services/dialogbox_service.dart';
+import 'package:test_6/services/words_service.dart';
 import 'package:test_6/services/custom_icon_service.dart';
 import 'package:test_6/services/info_dialog_service.dart';
 import 'dart:math';

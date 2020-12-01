@@ -125,7 +125,7 @@ class _WordsToRenderState extends State<WordsToRender> {
     double _width = MediaQuery.of(context).size.width;
     List<Widget> list = List<Widget>();
     for (var i = 0; i < _item.length; i++) {
-      if (_item[i] != 'N/A') {
+      if (_item[i] != 'N/A' && _item[i] != '') {
         list.add(Chip(
             label: Text(_item[i],
                 style: TextStyle(

@@ -83,7 +83,9 @@ class _WordHomePageState extends State<WordHomePage>
               onPressed: () => showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return InfoDialogbox(darkThemeChosen: _darkThemeChosen,);
+                    return InfoDialogbox(
+                      darkThemeChosen: _darkThemeChosen,
+                    );
                   }),
               icon: Icon(CustomIcon.info),
               splashRadius: 20,
@@ -247,9 +249,7 @@ class _WordHomePageState extends State<WordHomePage>
     // get _favouriteItemListFull from memory
     getFavListFromMemory().then((value) {
       if (value.length > 0) {
-        setState(() {
-          _favouriteItemListFull = value;
-        });
+        setState(() => _favouriteItemListFull = value);
       }
       _favouriteItemListSet = partition(_favouriteItemListFull, 30).toList();
     });
@@ -325,8 +325,10 @@ class _WordHomePageState extends State<WordHomePage>
   }
 
   Icon _favouriteIcon(List<Map> data, int index) {
-    Icon _iconInactive = Icon(Icons.lightbulb, color: Colors.orange[700]);
-    Icon _iconActive = Icon(Icons.lightbulb_outline, color: Colors.orange[700]);
+    Icon _iconInactive = Icon(Icons.lightbulb,
+        color: _darkThemeChosen ? Colors.yellow : Colors.orange[700]);
+    Icon _iconActive = Icon(Icons.lightbulb_outline,
+        color: _darkThemeChosen ? Colors.yellow : Colors.orange[700]);
 
     if (_currentWordsetIdx != null) {
       return _favouriteItemListSet.elementAt(_currentWordsetIdx)[index]
@@ -364,7 +366,10 @@ class _WordHomePageState extends State<WordHomePage>
           ],
         ),
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+          side: BorderSide(
+              color: _darkThemeChosen ? Colors.white : Colors.black, width: 1)),
     );
   }
 
@@ -392,11 +397,8 @@ class _WordHomePageState extends State<WordHomePage>
     _curvedAnimation = CurvedAnimation(
         parent: _animationController, curve: Curves.fastOutSlowIn);
 
-    _animationController.addListener(() {
-      setState(() {
-        _backgroundColor = _colorTween.evaluate(_curvedAnimation);
-      });
-    });
+    _animationController.addListener(() => setState(
+        () => _backgroundColor = _colorTween.evaluate(_curvedAnimation)));
 
     if (details.velocity.pixelsPerSecond.dx > 0) {
       if (_cardIndex > 0) {

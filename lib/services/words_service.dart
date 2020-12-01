@@ -25,18 +25,15 @@ class _WordsToRenderState extends State<WordsToRender> {
   Widget build(BuildContext context) {
     double _height = MediaQuery.of(context).size.height;
     double _width = MediaQuery.of(context).size.width;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Container(
-            height: (_width < 350)
-                ? _height / 100 * 12
-                : (_width >= 350 && _width < 600)
-                    ? _height / 100 * 14
-                    : _height / 100 * 15,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            constraints: BoxConstraints(
+                maxHeight: double.infinity, minHeight: _height / 100 * 12),
             child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Column(
@@ -58,15 +55,9 @@ class _WordsToRenderState extends State<WordsToRender> {
                   ],
                 )),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Container(
-            height: (_width < 350)
-                ? _height / 100 * 8
-                : (_width >= 350 && _width < 600)
-                    ? _height / 100 * 7
-                    : _height / 100 * 9,
+          Container(
+            constraints: BoxConstraints(
+                maxHeight: double.infinity, minHeight: _height / 100 * 6),
             alignment: Alignment.bottomLeft,
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
@@ -84,16 +75,10 @@ class _WordsToRenderState extends State<WordsToRender> {
               ),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-          child: Container(
-            height: (_width < 350)
-                ? _height / 100 * 6
-                : (_width >= 350 && _width < 600)
-                    ? _height / 100 * 7
-                    : _height / 100 * 9,
-            alignment: Alignment.bottomLeft,
+          Container(
+            constraints: BoxConstraints(
+                maxHeight: double.infinity, minHeight: _height / 100 * 7),
+            alignment: Alignment.centerLeft,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Text(
@@ -101,7 +86,9 @@ class _WordsToRenderState extends State<WordsToRender> {
                     ? widget.listOfWordset[0][widget.index]['WORDS']
                     : widget.data[widget.index]['WORDS'],
                 style: TextStyle(
-                    color: widget.darkThemeChosen ? Colors.white : Colors.grey[700],
+                    color: widget.darkThemeChosen
+                        ? Colors.white
+                        : Colors.grey[700],
                     fontFamily: 'Roboto Slab',
                     fontSize: (_width < 350)
                         ? 22.0 * MediaQuery.textScaleFactorOf(context)
@@ -111,23 +98,25 @@ class _WordsToRenderState extends State<WordsToRender> {
               ),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-          child: Container(
-            height: _height / 100 * 0.5,
-            alignment: Alignment.center,
-            child: LinearProgressIndicator(
-              value: (widget.listSelected
-                  ? widget.listOfWordset[0]
-                          .indexOf(widget.listOfWordset[0][widget.index]) /
-                      100 *
-                      3.5
-                  : widget.data.indexOf(widget.data[widget.index]) / 100 * 0.12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+            child: Container(
+              height: 3.5,
+              alignment: Alignment.center,
+              child: LinearProgressIndicator(
+                value: (widget.listSelected
+                    ? widget.listOfWordset[0]
+                            .indexOf(widget.listOfWordset[0][widget.index]) /
+                        100 *
+                        3.5
+                    : widget.data.indexOf(widget.data[widget.index]) /
+                        100 *
+                        0.12),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

@@ -293,7 +293,7 @@ class _WordHomePageState extends State<WordHomePage>
       _pageController = PageController(viewportFraction: 0.7);
     }
     return PageView.builder(
-      key: _curentList ? ObjectKey(_listOfWordset[0][0]) : null,
+      key: _curentList ? ObjectKey(_listOfWordset[0]) : ObjectKey(data[0]) ,
       physics: NeverScrollableScrollPhysics(),
       itemCount: _curentList ? _listOfWordset[0].length : data.length,
       controller: _pageController,
@@ -305,23 +305,13 @@ class _WordHomePageState extends State<WordHomePage>
   }
 
   Widget wordsetToRenderOnCards(List<Map> data, int index) {
-    if (_currentWordsetIdx != null) {
-      return WordsToRender(
-        darkThemeChosen: _darkThemeChosen,
-        listOfWordset: _listOfWordset,
-        data: data,
-        index: index,
-        listSelected: true,
-      );
-    } else {
-      return WordsToRender(
-        darkThemeChosen: _darkThemeChosen,
-        listOfWordset: _listOfWordset,
-        data: data,
-        index: index,
-        listSelected: false,
-      );
-    }
+    return WordsToRender(
+      darkThemeChosen: _darkThemeChosen,
+      listOfWordset: _listOfWordset,
+      data: data,
+      index: index,
+      listSelected: _currentWordsetIdx != null ? true : false,
+    );
   }
 
   Icon _favouriteIcon(List<Map> data, int index) {

@@ -72,8 +72,8 @@ class _WordHomePageState extends State<WordHomePage>
             child: IconButton(
               onPressed: _darkModeToggle,
               icon: _darkThemeChosen
-                  ? Icon(CustomIcon.moon)
-                  : Icon(CustomIcon.sunny),
+                  ? Icon(CustomIcon.sunny)
+                  : Icon(CustomIcon.moon),
               splashRadius: 20,
             ),
           ),

@@ -33,7 +33,7 @@ class _WordsToRenderState extends State<WordsToRender> {
         children: <Widget>[
           Container(
             constraints: BoxConstraints(
-                maxHeight: double.infinity, minHeight: _height / 100 * 12),
+                maxHeight: double.infinity, minHeight: _height / 100 * 15),
             child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Column(
@@ -71,13 +71,13 @@ class _WordsToRenderState extends State<WordsToRender> {
                         ? 12.0 * MediaQuery.textScaleFactorOf(context)
                         : (_width >= 350 && _width < 600)
                             ? 13.0 * MediaQuery.textScaleFactorOf(context)
-                            : 14.0 * MediaQuery.textScaleFactorOf(context)),
+                            : 16.0 * MediaQuery.textScaleFactorOf(context)),
               ),
             ),
           ),
           Container(
             constraints: BoxConstraints(
-                maxHeight: double.infinity, minHeight: _height / 100 * 7),
+                maxHeight: double.infinity, minHeight: _height / 100 * 5),
             alignment: Alignment.centerLeft,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -133,7 +133,7 @@ class _WordsToRenderState extends State<WordsToRender> {
                       ? 11.0 * MediaQuery.textScaleFactorOf(context)
                       : (_width >= 350 && _width < 600)
                           ? 12.0 * MediaQuery.textScaleFactorOf(context)
-                          : 13.0 * MediaQuery.textScaleFactorOf(context),
+                          : 14.0 * MediaQuery.textScaleFactorOf(context),
                 )),
             backgroundColor: _bgColor));
       }

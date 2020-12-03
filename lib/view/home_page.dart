@@ -289,11 +289,14 @@ class _WordHomePageState extends State<WordHomePage>
   PageView pageViewForWordlist(List<Map> data, bool _curentList) {
     if (MediaQuery.of(context).size.width < 350) {
       _pageController = PageController(viewportFraction: 1.0);
-    } else {
+    } else if (MediaQuery.of(context).size.width >= 350 &&
+        MediaQuery.of(context).size.width < 600) {
       _pageController = PageController(viewportFraction: 0.7);
+    } else {
+      _pageController = PageController(viewportFraction: 0.45);
     }
     return PageView.builder(
-      key: _curentList ? ObjectKey(_listOfWordset[0]) : ObjectKey(data[0]) ,
+      key: _curentList ? ObjectKey(_listOfWordset[0]) : ObjectKey(data[0]),
       physics: NeverScrollableScrollPhysics(),
       itemCount: _curentList ? _listOfWordset[0].length : data.length,
       controller: _pageController,

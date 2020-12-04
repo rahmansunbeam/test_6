@@ -57,7 +57,7 @@ class _WordsToRenderState extends State<WordsToRender> {
           ),
           Container(
             constraints: BoxConstraints(
-                maxHeight: double.infinity, minHeight: _height / 100 * 6),
+                maxHeight: _height / 100 * 7, minHeight: _height / 100 * 7),
             alignment: Alignment.bottomLeft,
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
@@ -68,9 +68,9 @@ class _WordsToRenderState extends State<WordsToRender> {
                 style: TextStyle(
                     color: widget.darkThemeChosen ? Colors.white : Colors.black,
                     fontSize: (_width < 350)
-                        ? 12.0 * MediaQuery.textScaleFactorOf(context)
+                        ? 11.0 * MediaQuery.textScaleFactorOf(context)
                         : (_width >= 350 && _width < 600)
-                            ? 13.0 * MediaQuery.textScaleFactorOf(context)
+                            ? 12.0 * MediaQuery.textScaleFactorOf(context)
                             : 16.0 * MediaQuery.textScaleFactorOf(context)),
               ),
             ),

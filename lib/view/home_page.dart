@@ -114,7 +114,7 @@ class _WordHomePageState extends State<WordHomePage>
                         padding:
                             const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 12.0),
                         child: Text(
-                          "Hi, there.",
+                          "Hi there",
                           style: TextStyle(
                               fontSize:
                                   26.0 * MediaQuery.textScaleFactorOf(context),
@@ -230,6 +230,7 @@ class _WordHomePageState extends State<WordHomePage>
             return Center(
               child: SpinKitThreeBounce(
                 color: Colors.white,
+                size: 30 * MediaQuery.textScaleFactorOf(context),
               ),
             );
           } else {

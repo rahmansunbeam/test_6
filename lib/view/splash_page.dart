@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:test_6/view/home_page.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -35,11 +36,36 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.teal[700],
-      body: Center(
-        child: SpinKitThreeBounce(
-          color: Colors.white,
-          size: 40 * MediaQuery.textScaleFactorOf(context),
-        ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(18.0),
+            child: Container(
+              width: 15.0 * MediaQuery.textScaleFactorOf(context),
+              height: 15.0 * MediaQuery.textScaleFactorOf(context),
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                      fit: BoxFit.fill,
+                      image: AssetImage('assets/icon/icon.png'))),
+            ),
+          ),
+          Text('Just Another Flashcard App',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'Roboto Slab',
+                fontSize: 18.0 * MediaQuery.textScaleFactorOf(context),
+              )),
+          Container(
+            height: (MediaQuery.of(context).size.height / 100) * 50,
+            child: SpinKitThreeBounce(
+              color: Colors.white,
+              size: 30 * MediaQuery.textScaleFactorOf(context),
+            ),
+          ),
+        ],
       ),
     );
   }

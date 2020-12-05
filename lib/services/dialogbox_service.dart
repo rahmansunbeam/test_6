@@ -41,8 +41,7 @@ class _DialogboxForWordsetState extends State<DialogboxForWordset> {
         ),
         new FlatButton(
           child: new Text("Close",
-              style:
-                  TextStyle(color: widget.darkThemeChosen ? Colors.white : Colors.blue)),
+              style: TextStyle(color: widget.darkThemeChosen ? Colors.white : Colors.blue)),
           onPressed: () {
             Navigator.of(context).pop();
           },

@@ -6,8 +6,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class SplashScreen extends StatefulWidget {
   final Color backgroundColor = Colors.white;
-  final TextStyle styleTextUnderTheLoader = TextStyle(
-      fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.black);
+  final TextStyle styleTextUnderTheLoader =
+      TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.black);
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
@@ -28,8 +28,8 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void navigationPage() {
-    Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (BuildContext context) => WordHomePage()));
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (BuildContext context) => WordHomePage()));
   }
 
   @override
@@ -42,13 +42,12 @@ class _SplashScreenState extends State<SplashScreen> {
           Padding(
             padding: const EdgeInsets.all(18.0),
             child: Container(
-              width: 15.0 * MediaQuery.textScaleFactorOf(context),
-              height: 15.0 * MediaQuery.textScaleFactorOf(context),
+              width: 30.0 * MediaQuery.textScaleFactorOf(context),
+              height: 30.0 * MediaQuery.textScaleFactorOf(context),
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  image: DecorationImage(
-                      fit: BoxFit.fill,
-                      image: AssetImage('assets/icon/icon.png'))),
+                  image:
+                      DecorationImage(fit: BoxFit.fill, image: AssetImage('assets/icon/icon.png'))),
             ),
           ),
           Text('Just Another Flashcard App',

@@ -14,8 +14,7 @@ class WordHomePage extends StatefulWidget {
   _WordHomePageState createState() => _WordHomePageState();
 }
 
-class _WordHomePageState extends State<WordHomePage>
-    with TickerProviderStateMixin {
+class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMixin {
   Future<List<Map>> _loadAsset;
   PageController _pageController;
 
@@ -27,8 +26,7 @@ class _WordHomePageState extends State<WordHomePage>
   bool _darkThemeChosen = false;
   Color _backgroundColor;
 
-  List<FloatingActionButton> _listOfButtonsForWordset =
-      new List<FloatingActionButton>();
+  List<FloatingActionButton> _listOfButtonsForWordset = new List<FloatingActionButton>();
   List _listOfWordset = [];
   dynamic _currentWordIdx;
   dynamic _currentWordsetIdx;
@@ -56,8 +54,7 @@ class _WordHomePageState extends State<WordHomePage>
     double _height = MediaQuery.of(context).size.height / 100;
 
     // get dark theme from memory if exists
-    getThemeFromMemory()
-        .then((value) => setState(() => _darkThemeChosen = value));
+    getThemeFromMemory().then((value) => setState(() => _darkThemeChosen = value));
 
     // getting favourite word list from memory
     getFavWordsFromMemory().then((value) => _favouriteWordList = value);
@@ -71,9 +68,7 @@ class _WordHomePageState extends State<WordHomePage>
             padding: const EdgeInsets.only(right: 4.0),
             child: IconButton(
               onPressed: _darkModeToggle,
-              icon: _darkThemeChosen
-                  ? Icon(CustomIcon.sunny)
-                  : Icon(CustomIcon.moon),
+              icon: _darkThemeChosen ? Icon(CustomIcon.sunny) : Icon(CustomIcon.moon),
               splashRadius: 20,
             ),
           ),
@@ -111,21 +106,18 @@ class _WordHomePageState extends State<WordHomePage>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Padding(
-                        padding:
-                            const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 12.0),
+                        padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 12.0),
                         child: Text(
                           "Hi there",
                           style: TextStyle(
-                              fontSize:
-                                  26.0 * MediaQuery.textScaleFactorOf(context),
+                              fontSize: 26.0 * MediaQuery.textScaleFactorOf(context),
                               color: Colors.white),
                         ),
                       ),
                       Text(
                         "Let's learn some words today",
                         style: TextStyle(
-                            fontSize:
-                                14.0 * MediaQuery.textScaleFactorOf(context),
+                            fontSize: 14.0 * MediaQuery.textScaleFactorOf(context),
                             color: Colors.white),
                       ),
                     ],
@@ -141,32 +133,33 @@ class _WordHomePageState extends State<WordHomePage>
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          _favouriteWordList.length != null &&
-                                  _favouriteWordList.length != 0
+                          _favouriteWordList.length != null && _favouriteWordList.length != 0
                               ? _favouriteWordList.length == 1
                                   ? '${_favouriteWordList.length} word learned'
                                   : '${_favouriteWordList.length} words learned'
                               : '',
                           style: TextStyle(
-                              fontSize:
-                                  16.0 * MediaQuery.textScaleFactorOf(context),
+                              fontSize: 16.0 * MediaQuery.textScaleFactorOf(context),
                               color: Colors.white),
                         ),
                         IconButton(
                           icon: Icon(
                             Icons.delete_forever_rounded,
                             color: Colors.white,
-                            size: _favouriteWordList.length != null &&
-                                    _favouriteWordList.length != 0
-                                ? 16.0 * MediaQuery.textScaleFactorOf(context)
-                                : 0,
+                            size:
+                                _favouriteWordList.length != null && _favouriteWordList.length != 0
+                                    ? 16.0 * MediaQuery.textScaleFactorOf(context)
+                                    : 0,
                           ),
                           onPressed: () {
                             setState(() {
+                              _cardIndex = 0;
                               _favouriteItemListFull.clear();
                               _favouriteWordList.clear();
                               _currentWordsetIdx = null;
                               removeAllUserData();
+                              _pageController.animateTo(_pageController.initialPage.toDouble(),
+                                  duration: Duration(milliseconds: 300), curve: Curves.linear);
                             });
                           },
                         ),
@@ -184,20 +177,23 @@ class _WordHomePageState extends State<WordHomePage>
                     // Wordset choosing button
                     Container(
                         child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       child: FloatingActionButton.extended(
                           onPressed: () => showDialog(
                               context: context,
                               builder: (BuildContext context) {
                                 return DialogboxForWordset(
                                     darkThemeChosen: _darkThemeChosen,
-                                    listOfButtonsForWordset:
-                                        _listOfButtonsForWordset,
+                                    listOfButtonsForWordset: _listOfButtonsForWordset,
                                     callback: () {
                                       setState(() {
+                                        _cardIndex = 0;
                                         _favouriteWordList.clear();
                                         _currentWordsetIdx = null;
+                                        _pageController.animateTo(
+                                            _pageController.initialPage.toDouble(),
+                                            duration: Duration(milliseconds: 300),
+                                            curve: Curves.linear);
                                       });
                                     });
                               }),
@@ -268,15 +264,18 @@ class _WordHomePageState extends State<WordHomePage>
   // Create each button to show wordset
   FloatingActionButton buildFabForWordset(Iterable<List> _dataItems, int i) {
     return new FloatingActionButton(
+        mini: true,
+        child: Text((i + 1).toString()),
         onPressed: () {
           setState(() {
+            _cardIndex = 0;
             _listOfWordset.clear();
             _listOfWordset.add(_dataItems.elementAt(i));
             _currentWordsetIdx = i;
+            _pageController.animateTo(_pageController.initialPage.toDouble(),
+                duration: Duration(milliseconds: 200), curve: Curves.linear);
           });
-        },
-        mini: true,
-        child: Text((i + 1).toString()));
+        });
   }
 
   Widget _pageviewBuilder(List<Map> data) {
@@ -297,8 +296,7 @@ class _WordHomePageState extends State<WordHomePage>
       _pageController = PageController(viewportFraction: 0.45);
     }
     return PageView.builder(
-      key: _curentList ? ObjectKey(_listOfWordset[0]) : ObjectKey(data[0]),
-      physics: NeverScrollableScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       itemCount: _curentList ? _listOfWordset[0].length : data.length,
       controller: _pageController,
       scrollDirection: Axis.horizontal,
@@ -319,10 +317,10 @@ class _WordHomePageState extends State<WordHomePage>
   }
 
   Icon _favouriteIcon(List<Map> data, int index) {
-    Icon _iconInactive = Icon(Icons.lightbulb,
-        color: _darkThemeChosen ? Colors.yellow : Colors.orange[700]);
-    Icon _iconActive = Icon(Icons.lightbulb_outline,
-        color: _darkThemeChosen ? Colors.yellow : Colors.orange[700]);
+    Icon _iconInactive =
+        Icon(Icons.lightbulb, color: _darkThemeChosen ? Colors.yellow : Colors.orange[700]);
+    Icon _iconActive =
+        Icon(Icons.lightbulb_outline, color: _darkThemeChosen ? Colors.yellow : Colors.orange[700]);
 
     if (_currentWordsetIdx != null) {
       return _favouriteItemListSet.elementAt(_currentWordsetIdx)[index]
@@ -362,8 +360,7 @@ class _WordHomePageState extends State<WordHomePage>
       ),
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.0),
-          side: BorderSide(
-              color: _darkThemeChosen ? Colors.white : Colors.black, width: 1)),
+          side: BorderSide(color: _darkThemeChosen ? Colors.white : Colors.black, width: 1)),
     );
   }
 
@@ -381,18 +378,15 @@ class _WordHomePageState extends State<WordHomePage>
         });
   }
 
-  dynamic _gestureChangeBgColorMode(
-      List<Map> data, int index, DragEndDetails details) {
+  dynamic _gestureChangeBgColorMode(List<Map> data, int index, DragEndDetails details) {
     Color _randomColor = Color(Random().nextInt(0xffffffff)).withAlpha(0xff);
 
-    _animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
 
-    _curvedAnimation = CurvedAnimation(
-        parent: _animationController, curve: Curves.fastOutSlowIn);
+    _curvedAnimation = CurvedAnimation(parent: _animationController, curve: Curves.fastOutSlowIn);
 
-    _animationController.addListener(() => setState(
-        () => _backgroundColor = _colorTween.evaluate(_curvedAnimation)));
+    _animationController.addListener(
+        () => setState(() => _backgroundColor = _colorTween.evaluate(_curvedAnimation)));
 
     if (details.velocity.pixelsPerSecond.dx > 0) {
       if (_cardIndex > 0) {
@@ -427,16 +421,14 @@ class _WordHomePageState extends State<WordHomePage>
         ? _favouriteWordList.remove(_currentWordIdx)
         : _favouriteWordList.add(_currentWordIdx);
 
-    setState(
-        () => setStateForGesture(_tempList, _activeSet, _activeSetIdx, index));
+    setState(() => setStateForGesture(_tempList, _activeSet, _activeSetIdx, index));
     // save _favouriteItemListFull to the memory
     setFavListToMemory(_favouriteItemListFull);
     // save favourite word list to memory
     if (_favouriteWordList != null) setFavWordsToMemory(_favouriteWordList);
   }
 
-  void setStateForGesture(
-      List _tempList, int _activeSet, int _activeSetIdx, int index) {
+  void setStateForGesture(List _tempList, int _activeSet, int _activeSetIdx, int index) {
     // find the position of the item within the _favouriteItemListSet
     _tempList.forEach((element) {
       return element.forEach((e) {
@@ -454,8 +446,7 @@ class _WordHomePageState extends State<WordHomePage>
       _favouriteItemListFull[_currentWordIdx - 1] =
           _favouriteWordList.contains(_currentWordIdx) ? true : false;
     } else {
-      _favouriteItemListFull[index] =
-          _favouriteWordList.contains(_currentWordIdx) ? true : false;
+      _favouriteItemListFull[index] = _favouriteWordList.contains(_currentWordIdx) ? true : false;
       _favouriteItemListSet.elementAt(_activeSet)[_activeSetIdx] =
           _favouriteWordList.contains(_currentWordIdx) ? true : false;
     }

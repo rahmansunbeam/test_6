@@ -46,21 +46,19 @@ class _WordsToRenderState extends State<WordsToRender> {
     List<Widget> list = [];
     for (var i = 0; i < _item.length; i++) {
       if (_item[i] != 'N/A' && _item[i] != '') {
-        list.add(Padding(
-          padding: const EdgeInsets.only(top: 5, bottom: 5),
-          child: Container(
-            padding: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-                color: _bgColor, borderRadius: BorderRadius.all(Radius.circular(20))),
-            child: Text(_item[i],
-                style: TextStyle(
-                  fontSize: (_width < 375)
-                      ? 11.0 * MediaQuery.textScaleFactorOf(context)
-                      : (_width >= 375 && _width < 600)
-                          ? 12.0 * MediaQuery.textScaleFactorOf(context)
-                          : 14.0 * MediaQuery.textScaleFactorOf(context),
-                )),
-          ),
+        list.add(Container(
+          padding: const EdgeInsets.all(8.0),
+          margin: const EdgeInsets.only(top: 5, bottom: 5),
+          decoration: BoxDecoration(
+              color: _bgColor, borderRadius: BorderRadius.all(Radius.circular(20))),
+          child: Text(_item[i],
+              style: TextStyle(
+                fontSize: (_width < 375)
+                    ? 11.0 * MediaQuery.textScaleFactorOf(context)
+                    : (_width >= 375 && _width < 600)
+                        ? 12.0 * MediaQuery.textScaleFactorOf(context)
+                        : 14.0 * MediaQuery.textScaleFactorOf(context),
+              )),
         ));
       }
     }
@@ -96,7 +94,7 @@ class _WordsToRenderState extends State<WordsToRender> {
     return Container(
       alignment: Alignment.bottomLeft,
       constraints:
-          BoxConstraints(maxHeight: _height / 100 * 7, minHeight: _height / 100 * 6),
+          BoxConstraints(maxHeight: _height / 100 * 8, minHeight: _height / 100 * 6),
       child: Scrollbar(
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
@@ -136,25 +134,23 @@ class _WordsToRenderState extends State<WordsToRender> {
                   ? 20.0 * MediaQuery.textScaleFactorOf(context)
                   : (_width >= 375 && _width < 600)
                       ? 22.0 * MediaQuery.textScaleFactorOf(context)
-                      : 30.0 * MediaQuery.textScaleFactorOf(context)),
+                      : 26.0 * MediaQuery.textScaleFactorOf(context)),
         ),
       ),
     );
   }
 
   Widget _progressBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-      child: Container(
-        height: 3.5,
-        alignment: Alignment.center,
-        child: LinearProgressIndicator(
-          value: (widget.listSelected
-              ? widget.listOfWordset[0].indexOf(widget.listOfWordset[0][widget.index]) /
-                  100 *
-                  3.5
-              : widget.data.indexOf(widget.data[widget.index]) / 100 * 0.12),
-        ),
+    return Container(
+      alignment: Alignment.center,
+      height: 3.5,
+      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+      child: LinearProgressIndicator(
+        value: (widget.listSelected
+            ? widget.listOfWordset[0].indexOf(widget.listOfWordset[0][widget.index]) /
+                100 *
+                3.5
+            : widget.data.indexOf(widget.data[widget.index]) / 100 * 0.12),
       ),
     );
   }

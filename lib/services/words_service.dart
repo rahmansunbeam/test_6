@@ -31,7 +31,7 @@ class _WordsToRenderState extends State<WordsToRender> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          _synonymsAndAntonyms(_height, _width),
+          _synonymsAndAntonyms(_height),
           _wordMeanings(_height, _width),
           _words(_height, _width),
           _progressBar()
@@ -65,7 +65,7 @@ class _WordsToRenderState extends State<WordsToRender> {
     return Wrap(runSpacing: -16, spacing: 2, children: list);
   }
 
-  Widget _synonymsAndAntonyms(double _height, double _width) {
+  Widget _synonymsAndAntonyms(double _height) {
     return Container(
       constraints:
           BoxConstraints(maxHeight: double.infinity, minHeight: _height / 100 * 15),
@@ -87,6 +87,18 @@ class _WordsToRenderState extends State<WordsToRender> {
                   Colors.tealAccent),
             ],
           )),
+      // child: ListView.builder(
+      //     scrollDirection: Axis.horizontal,
+      //     itemCount: widget.listSelected
+      //         ? widget.listOfWordset[0][widget.index]['ANTONYMS'].split('| ').length
+      //         : widget.data[widget.index]['ANTONYMS'].split('| ').length,
+      //     itemBuilder: (context, index) {
+      //       return Text(
+      //         widget.listSelected
+      //             ? widget.listOfWordset[0][widget.index]['ANTONYMS'].split('| ')[index]
+      //             : widget.data[widget.index]['ANTONYMS'].split('| ')[index],
+      //       );
+      //     }),
     );
   }
 

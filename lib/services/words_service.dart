@@ -8,12 +8,7 @@ class WordsToRender extends StatefulWidget {
   final index;
 
   const WordsToRender(
-      {Key key,
-      this.listOfWordset,
-      this.listSelected,
-      this.darkThemeChosen,
-      this.data,
-      this.index})
+      {Key key, this.listOfWordset, this.listSelected, this.darkThemeChosen, this.data, this.index})
       : super(key: key);
 
   @override
@@ -44,6 +39,35 @@ class _WordsToRenderState extends State<WordsToRender> {
   Widget _listOfWordsToMakeChips(List<String> _item, Color _bgColor) {
     double _width = MediaQuery.of(context).size.width;
     List<Widget> list = [];
+
+    // return LimitedBox(
+    //   maxHeight: MediaQuery.of(context).size.height * 0.05,
+    //   child: ListView.builder(
+    //       shrinkWrap: true,
+    //       itemCount: _item.length,
+    //       scrollDirection: Axis.horizontal,
+    //       physics: NeverScrollableScrollPhysics(),
+    //       itemBuilder: (context, index) {
+    //         return Padding(
+    //           padding: const EdgeInsets.all(1.0),
+    //           child: Container(
+    //               padding: const EdgeInsets.all(8.0),
+    //               margin: const EdgeInsets.only(top: 5, bottom: 5),
+    //               decoration: BoxDecoration(
+    //                   color: _bgColor, borderRadius: BorderRadius.all(Radius.circular(20))),
+    //               child: (_item[index] != 'N/A' && _item[index] != '')
+    //                   ? Text(_item[index],
+    //                       style: TextStyle(
+    //                         fontSize: (_width < 375)
+    //                             ? 11.0 * MediaQuery.textScaleFactorOf(context)
+    //                             : (_width >= 375 && _width < 600)
+    //                                 ? 12.0 * MediaQuery.textScaleFactorOf(context)
+    //                                 : 14.0 * MediaQuery.textScaleFactorOf(context),
+    //                       ))
+    //                   : null),
+    //         );
+    //       }),
+    // );
     for (var i = 0; i < _item.length; i++) {
       if (_item[i] != 'N/A' && _item[i] != '') {
         list.add(Container(
@@ -67,8 +91,7 @@ class _WordsToRenderState extends State<WordsToRender> {
 
   Widget _synonymsAndAntonyms(double _height) {
     return Container(
-      constraints:
-          BoxConstraints(maxHeight: double.infinity, minHeight: _height / 100 * 15),
+      constraints: BoxConstraints(maxHeight: double.infinity, minHeight: _height / 100 * 15),
       child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Column(
@@ -105,8 +128,13 @@ class _WordsToRenderState extends State<WordsToRender> {
   Widget _wordMeanings(double _height, double _width) {
     return Container(
       alignment: Alignment.bottomLeft,
-      constraints:
-          BoxConstraints(maxHeight: _height / 100 * 8, minHeight: _height / 100 * 6),
+      constraints: BoxConstraints(
+          maxHeight: (_width < 380)
+              ? _height / 100 * 7
+              : (_width >= 380 && _width < 600)
+                  ? _height / 100 * 8
+                  : _height / 100 * 9,
+          minHeight: _height / 100 * 6),
       child: Scrollbar(
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
@@ -133,8 +161,7 @@ class _WordsToRenderState extends State<WordsToRender> {
       child: Container(
         padding: const EdgeInsets.only(top: 4.0),
         alignment: Alignment.centerLeft,
-        constraints:
-            BoxConstraints(maxHeight: double.infinity, minHeight: _height / 100 * 5),
+        constraints: BoxConstraints(maxHeight: double.infinity, minHeight: _height / 100 * 5),
         child: Text(
           widget.listSelected
               ? widget.listOfWordset[0][widget.index]['WORDS']
@@ -159,9 +186,7 @@ class _WordsToRenderState extends State<WordsToRender> {
       margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
       child: LinearProgressIndicator(
         value: (widget.listSelected
-            ? widget.listOfWordset[0].indexOf(widget.listOfWordset[0][widget.index]) /
-                100 *
-                3.5
+            ? widget.listOfWordset[0].indexOf(widget.listOfWordset[0][widget.index]) / 100 * 3.5
             : widget.data.indexOf(widget.data[widget.index]) / 100 * 0.12),
       ),
     );

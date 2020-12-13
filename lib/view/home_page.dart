@@ -62,6 +62,7 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
     // main ui Scaffold
     return new Scaffold(
       appBar: new AppBar(
+        brightness: _darkThemeChosen ? Brightness.dark : Brightness.light,
         backgroundColor: _darkThemeChosen ? Colors.black : _backgroundColor,
         actions: <Widget>[
           Padding(

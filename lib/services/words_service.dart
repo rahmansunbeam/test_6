@@ -38,43 +38,14 @@ class _WordsToRenderState extends State<WordsToRender> {
   // Antonyms and synonyms chips are processed
   Widget _listOfWordsToMakeChips(List<String> _item, Color _bgColor) {
     double _width = MediaQuery.of(context).size.width;
-    List<Widget> list = [];
-
-    // return LimitedBox(
-    //   maxHeight: MediaQuery.of(context).size.height * 0.05,
-    //   child: ListView.builder(
-    //       shrinkWrap: true,
-    //       itemCount: _item.length,
-    //       scrollDirection: Axis.horizontal,
-    //       physics: NeverScrollableScrollPhysics(),
-    //       itemBuilder: (context, index) {
-    //         return Padding(
-    //           padding: const EdgeInsets.all(1.0),
-    //           child: Container(
-    //               padding: const EdgeInsets.all(8.0),
-    //               margin: const EdgeInsets.only(top: 5, bottom: 5),
-    //               decoration: BoxDecoration(
-    //                   color: _bgColor, borderRadius: BorderRadius.all(Radius.circular(20))),
-    //               child: (_item[index] != 'N/A' && _item[index] != '')
-    //                   ? Text(_item[index],
-    //                       style: TextStyle(
-    //                         fontSize: (_width < 375)
-    //                             ? 11.0 * MediaQuery.textScaleFactorOf(context)
-    //                             : (_width >= 375 && _width < 600)
-    //                                 ? 12.0 * MediaQuery.textScaleFactorOf(context)
-    //                                 : 14.0 * MediaQuery.textScaleFactorOf(context),
-    //                       ))
-    //                   : null),
-    //         );
-    //       }),
-    // );
+    List<Widget> _list = [];
     for (var i = 0; i < _item.length; i++) {
       if (_item[i] != 'N/A' && _item[i] != '') {
-        list.add(Container(
+        _list.add(Container(
           padding: const EdgeInsets.all(8.0),
           margin: const EdgeInsets.only(top: 5, bottom: 5),
-          decoration: BoxDecoration(
-              color: _bgColor, borderRadius: BorderRadius.all(Radius.circular(20))),
+          decoration:
+              BoxDecoration(color: _bgColor, borderRadius: BorderRadius.all(Radius.circular(20))),
           child: Text(_item[i],
               style: TextStyle(
                 fontSize: (_width < 375)
@@ -86,10 +57,22 @@ class _WordsToRenderState extends State<WordsToRender> {
         ));
       }
     }
-    return Wrap(runSpacing: -16, spacing: 2, children: list);
+    return Wrap(runSpacing: -16, spacing: 2, children: _list);
   }
 
   Widget _synonymsAndAntonyms(double _height) {
+    Widget _antonyms = _listOfWordsToMakeChips(
+        widget.listSelected
+            ? widget.listOfWordset[0][widget.index]['ANTONYMS'].split('| ')
+            : widget.data[widget.index]['ANTONYMS'].split('| '),
+        Colors.amber);
+
+    Widget _synonyms = _listOfWordsToMakeChips(
+        widget.listSelected
+            ? widget.listOfWordset[0][widget.index]['SYNONYMS'].split('| ')
+            : widget.data[widget.index]['SYNONYMS'].split('| '),
+        Colors.tealAccent);
+
     return Container(
       constraints: BoxConstraints(maxHeight: double.infinity, minHeight: _height / 100 * 15),
       child: SingleChildScrollView(
@@ -97,31 +80,8 @@ class _WordsToRenderState extends State<WordsToRender> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              _listOfWordsToMakeChips(
-                  widget.listSelected
-                      ? widget.listOfWordset[0][widget.index]['ANTONYMS'].split('| ')
-                      : widget.data[widget.index]['ANTONYMS'].split('| '),
-                  Colors.amber),
-              _listOfWordsToMakeChips(
-                  widget.listSelected
-                      ? widget.listOfWordset[0][widget.index]['SYNONYMS'].split('| ')
-                      : widget.data[widget.index]['SYNONYMS'].split('| '),
-                  Colors.tealAccent),
-            ],
+            children: [_antonyms, _synonyms],
           )),
-      // child: ListView.builder(
-      //     scrollDirection: Axis.horizontal,
-      //     itemCount: widget.listSelected
-      //         ? widget.listOfWordset[0][widget.index]['ANTONYMS'].split('| ').length
-      //         : widget.data[widget.index]['ANTONYMS'].split('| ').length,
-      //     itemBuilder: (context, index) {
-      //       return Text(
-      //         widget.listSelected
-      //             ? widget.listOfWordset[0][widget.index]['ANTONYMS'].split('| ')[index]
-      //             : widget.data[widget.index]['ANTONYMS'].split('| ')[index],
-      //       );
-      //     }),
     );
   }
 

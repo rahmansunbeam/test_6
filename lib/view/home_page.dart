@@ -134,8 +134,7 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          _favouriteWordList.length != null &&
-                                  _favouriteWordList.length != 0
+                          _favouriteWordList.length != null && _favouriteWordList.length != 0
                               ? _favouriteWordList.length == 1
                                   ? '${_favouriteWordList.length} word learned'
                                   : '${_favouriteWordList.length} words learned'
@@ -148,10 +147,10 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
                           icon: Icon(
                             Icons.delete_forever_rounded,
                             color: Colors.white,
-                            size: _favouriteWordList.length != null &&
-                                    _favouriteWordList.length != 0
-                                ? 16.0 * MediaQuery.textScaleFactorOf(context)
-                                : 0,
+                            size:
+                                _favouriteWordList.length != null && _favouriteWordList.length != 0
+                                    ? 16.0 * MediaQuery.textScaleFactorOf(context)
+                                    : 0,
                           ),
                           onPressed: () {
                             setState(() {
@@ -160,10 +159,8 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
                               _favouriteWordList.clear();
                               _currentWordsetIdx = null;
                               removeAllUserData();
-                              _pageController.animateTo(
-                                  _pageController.initialPage.toDouble(),
-                                  duration: Duration(milliseconds: 300),
-                                  curve: Curves.linear);
+                              _pageController.animateTo(_pageController.initialPage.toDouble(),
+                                  duration: Duration(milliseconds: 300), curve: Curves.linear);
                             });
                           },
                         ),
@@ -321,10 +318,10 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
   }
 
   Icon _favouriteIcon(List<Map> data, int index) {
-    Icon _iconInactive = Icon(Icons.lightbulb,
-        color: _darkThemeChosen ? Colors.yellow : Colors.orange[700]);
-    Icon _iconActive = Icon(Icons.lightbulb_outline,
-        color: _darkThemeChosen ? Colors.yellow : Colors.orange[700]);
+    Icon _iconInactive =
+        Icon(Icons.lightbulb, color: _darkThemeChosen ? Colors.yellow : Colors.orange[700]);
+    Icon _iconActive =
+        Icon(Icons.lightbulb_outline, color: _darkThemeChosen ? Colors.yellow : Colors.orange[700]);
 
     if (_currentWordsetIdx != null) {
       return _favouriteItemListSet.elementAt(_currentWordsetIdx)[index]
@@ -364,8 +361,7 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
       ),
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.0),
-          side: BorderSide(
-              color: _darkThemeChosen ? Colors.white : Colors.black, width: 1)),
+          side: BorderSide(color: _darkThemeChosen ? Colors.white : Colors.black, width: 1)),
     );
   }
 
@@ -386,11 +382,9 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
   dynamic _gestureChangeBgColorMode(List<Map> data, int index, DragEndDetails details) {
     Color _randomColor = Color(Random().nextInt(0xffffffff)).withAlpha(0xff);
 
-    _animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
 
-    _curvedAnimation =
-        CurvedAnimation(parent: _animationController, curve: Curves.fastOutSlowIn);
+    _curvedAnimation = CurvedAnimation(parent: _animationController, curve: Curves.fastOutSlowIn);
 
     _animationController.addListener(
         () => setState(() => _backgroundColor = _colorTween.evaluate(_curvedAnimation)));
@@ -453,8 +447,7 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
       _favouriteItemListFull[_currentWordIdx - 1] =
           _favouriteWordList.contains(_currentWordIdx) ? true : false;
     } else {
-      _favouriteItemListFull[index] =
-          _favouriteWordList.contains(_currentWordIdx) ? true : false;
+      _favouriteItemListFull[index] = _favouriteWordList.contains(_currentWordIdx) ? true : false;
       _favouriteItemListSet.elementAt(_activeSet)[_activeSetIdx] =
           _favouriteWordList.contains(_currentWordIdx) ? true : false;
     }

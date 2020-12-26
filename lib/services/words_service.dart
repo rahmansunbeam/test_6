@@ -35,39 +35,60 @@ class _WordsToRenderState extends State<WordsToRender> {
     );
   }
 
-  // Antonyms and synonyms chips are processed
-  Widget _listOfWordsToMakeChips(List<String> _item, Color _bgColor) {
+  Widget _containerForChips(String _listItem, Color _bgColor) {
     double _width = MediaQuery.of(context).size.width;
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      margin: const EdgeInsets.only(top: 5, bottom: 5),
+      decoration:
+          BoxDecoration(color: _bgColor, borderRadius: BorderRadius.all(Radius.circular(20))),
+      child: Text(_listItem,
+          style: TextStyle(
+            fontSize: (_width < 375)
+                ? 11.0 * MediaQuery.textScaleFactorOf(context)
+                : (_width >= 375 && _width < 600)
+                    ? 12.0 * MediaQuery.textScaleFactorOf(context)
+                    : 14.0 * MediaQuery.textScaleFactorOf(context),
+          )),
+    );
+  }
+
+  // Antonyms and synonyms chips are processed
+  Widget _listOfWordChips(List<String> _item, Color _bgColor) {
     List<Widget> _list = [];
     for (var i = 0; i < _item.length; i++) {
       if (_item[i] != 'N/A' && _item[i] != '') {
-        _list.add(Container(
-          padding: const EdgeInsets.all(8.0),
-          margin: const EdgeInsets.only(top: 5, bottom: 5),
-          decoration:
-              BoxDecoration(color: _bgColor, borderRadius: BorderRadius.all(Radius.circular(20))),
-          child: Text(_item[i],
-              style: TextStyle(
-                fontSize: (_width < 375)
-                    ? 11.0 * MediaQuery.textScaleFactorOf(context)
-                    : (_width >= 375 && _width < 600)
-                        ? 12.0 * MediaQuery.textScaleFactorOf(context)
-                        : 14.0 * MediaQuery.textScaleFactorOf(context),
-              )),
-        ));
+        _list.add(_containerForChips(_item[i], _bgColor));
       }
     }
     return Wrap(runSpacing: -16, spacing: 2, children: _list);
+
+    // return SizedBox(
+    //   height: 40,
+    //   child: ListView.builder(
+    //       shrinkWrap: true,
+    //       scrollDirection: Axis.horizontal,
+    //       physics: NeverScrollableScrollPhysics(),
+    //       itemCount: _item.length,
+    //       itemBuilder: (context, index) {
+    //         if (_item[index] != 'N/A' && _item[index] != '') {
+    //           return Padding(
+    //             padding: const EdgeInsets.only(right: 2.0),
+    //             child: _containerForChips(_item[index], _bgColor),
+    //           );
+    //         }
+    //       }),
+    // );
   }
 
   Widget _synonymsAndAntonyms(double _height) {
-    Widget _antonyms = _listOfWordsToMakeChips(
+    Widget _antonyms = _listOfWordChips(
         widget.listSelected
             ? widget.listOfWordset[0][widget.index]['ANTONYMS'].split('| ')
             : widget.data[widget.index]['ANTONYMS'].split('| '),
         Colors.amber);
 
-    Widget _synonyms = _listOfWordsToMakeChips(
+    Widget _synonyms = _listOfWordChips(
         widget.listSelected
             ? widget.listOfWordset[0][widget.index]['SYNONYMS'].split('| ')
             : widget.data[widget.index]['SYNONYMS'].split('| '),

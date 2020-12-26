@@ -26,7 +26,7 @@ class _WordHomePageState extends State<WordHomePage> with TickerProviderStateMix
   bool _darkThemeChosen = false;
   Color _backgroundColor;
 
-  List<FloatingActionButton> _listOfButtonsForWordset = new List<FloatingActionButton>();
+  List<FloatingActionButton> _listOfButtonsForWordset = [];
   List _listOfWordset = [];
   dynamic _currentWordIdx;
   dynamic _currentWordsetIdx;

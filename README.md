@@ -1,16 +1,17 @@
 # test_6
 
-A new Flutter project.
+Just Another Flashcard App repository
 
-## Getting Started
+## Description of the project
 
-This project is a starting point for a Flutter application.
+This project is the staging of JAF app. The word list I used is from GregMat.com.
 
-A few resources to get you started if this is your first Flutter project:
+- the wordlist is in the `assets/wordlist` folder
+- the fonts are in the same `assets` folder
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## TODO
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- increase performance for android
+- fix the current color for the background
+- fix typos and add better antonyms, antonyms
+- add some ui enhancement

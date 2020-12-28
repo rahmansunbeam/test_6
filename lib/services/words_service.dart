@@ -95,7 +95,7 @@ class _WordsToRenderState extends State<WordsToRender> {
         Colors.tealAccent);
 
     return Container(
-      constraints: BoxConstraints(maxHeight: double.infinity, minHeight: _height / 100 * 15),
+      constraints: BoxConstraints(maxHeight: _height / 100 * 17, minHeight: _height / 100 * 15),
       child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Column(

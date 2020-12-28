@@ -42,8 +42,8 @@ class _SplashScreenState extends State<SplashScreen> {
           Padding(
             padding: const EdgeInsets.all(18.0),
             child: Container(
-              width: 50.0 * MediaQuery.textScaleFactorOf(context),
-              height: 50.0 * MediaQuery.textScaleFactorOf(context),
+              width: 40.0 * MediaQuery.textScaleFactorOf(context),
+              height: 40.0 * MediaQuery.textScaleFactorOf(context),
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   image:
